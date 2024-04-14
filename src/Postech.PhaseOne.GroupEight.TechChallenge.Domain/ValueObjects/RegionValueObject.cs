@@ -1,6 +1,6 @@
 ﻿namespace Postech.PhaseOne.GroupEight.TechChallenge.Domain.ValueObjects
 {
-    public enum AreaCodeRegion
+    public enum RegionValueObject
     {
         Acre,
         Alagoas,

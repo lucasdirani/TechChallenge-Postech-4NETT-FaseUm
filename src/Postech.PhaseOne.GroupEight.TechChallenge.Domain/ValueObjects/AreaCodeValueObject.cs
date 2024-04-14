@@ -1,12 +1,12 @@
-﻿using Postech.PhaseOne.GroupEight.TechChallenge.Domain.Exceptions;
+﻿using Postech.PhaseOne.GroupEight.TechChallenge.Domain.Exceptions.ValueObjects;
 
 namespace Postech.PhaseOne.GroupEight.TechChallenge.Domain.ValueObjects
 {
-    public record AreaCode
+    public record AreaCodeValueObject
     {
         public const int AreaCodeValueLength = 2;
 
-        public AreaCode(string areaCodeValue, AreaCodeRegion areaCodeRegion)
+        public AreaCodeValueObject(string areaCodeValue, RegionValueObject areaCodeRegion)
         {
             if (string.IsNullOrEmpty(areaCodeValue) 
                 || areaCodeValue.Length != AreaCodeValueLength
@@ -19,6 +19,6 @@ namespace Postech.PhaseOne.GroupEight.TechChallenge.Domain.ValueObjects
         }
 
         public string Value { get; init; }
-        public AreaCodeRegion Region { get; init; }
+        public RegionValueObject Region { get; init; }
     }
 }

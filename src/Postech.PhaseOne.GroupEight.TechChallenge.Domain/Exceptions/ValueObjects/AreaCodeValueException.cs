@@ -1,4 +1,4 @@
-﻿namespace Postech.PhaseOne.GroupEight.TechChallenge.Domain.Exceptions
+﻿namespace Postech.PhaseOne.GroupEight.TechChallenge.Domain.Exceptions.ValueObjects
 {
     public class AreaCodeValueException : Exception
     {
