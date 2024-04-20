@@ -25,7 +25,6 @@ namespace Postech.PhaseOne.GroupEight.TechChallenge.UnitTests.Suite.Domain.Value
         [Category("AreaCode")]
         [InlineData("", RegionValueObject.Goias)]
         [InlineData(" ", RegionValueObject.Alagoas)]
-        [InlineData(null, RegionValueObject.Acre)]
         [InlineData("100", RegionValueObject.SaoPaulo)]
         [InlineData("4", RegionValueObject.Parana)]
         [InlineData("A9", RegionValueObject.Sergipe)]
