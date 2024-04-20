@@ -1,6 +1,5 @@
-﻿namespace Postech.PhaseOne.GroupEight.TechChallenge.Domain.Handlers.Contacts
+﻿namespace Postech.PhaseOne.GroupEight.TechChallenge.Domain.Handlers.Contacts;
+
+public class FindContactByAreaCodeHandler
 {
-    internal class FindContactByAreaCodeHandler
-    {
-    }
 }

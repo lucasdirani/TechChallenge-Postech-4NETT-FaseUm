@@ -1,6 +1,5 @@
-﻿namespace Postech.PhaseOne.GroupEight.TechChallenge.Domain.Handlers.Contacts
+﻿namespace Postech.PhaseOne.GroupEight.TechChallenge.Domain.Handlers.Contacts;
+
+public class DeleteContactHandler
 {
-    internal class DeleteContactHandler
-    {
-    }
 }
