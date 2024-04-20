@@ -4,7 +4,7 @@ namespace Postech.PhaseOne.GroupEight.TechChallenge.Domain.Entities
 {
     public class ContactEntity : EntityBase
     {             
-        public NameValueObject? Name { get; set; }
+        public ContactNameValueObject? Name { get; set; }
 
         public EmailValueObject? Email { get; set; }
 
