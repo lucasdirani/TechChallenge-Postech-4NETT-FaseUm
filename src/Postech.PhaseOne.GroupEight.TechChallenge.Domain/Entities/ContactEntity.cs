@@ -8,6 +8,6 @@ namespace Postech.PhaseOne.GroupEight.TechChallenge.Domain.Entities
 
         public ContactEmailValueObject? ContactEmail { get; set; }
 
-        public PhoneValueObject? ContactPhone { get; set; }
+        public ContactPhoneValueObject? ContactPhone { get; set; }
     }
 }
