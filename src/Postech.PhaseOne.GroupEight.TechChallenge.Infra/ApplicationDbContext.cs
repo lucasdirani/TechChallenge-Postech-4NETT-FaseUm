@@ -5,15 +5,31 @@ namespace Postech.PhaseOne.GroupEight.TechChallenge.Infra;
 
 public class ApplicationDbContext : DbContext
 {
-    public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
+    private readonly string _connectionString;
+    public ApplicationDbContext(string connectionString)
     {
+        _connectionString = connectionString;
     }
 
     public DbSet<ContactEntity> Contacts { get; set; }
 
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    {
+        if (!optionsBuilder.IsConfigured)
+        {
+            optionsBuilder.UseSqlServer(_connectionString);
+        }
+    }
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<ContactEntity>().HasKey(e => e.Id);
-        modelBuilder.Entity<ContactEntity>().Property(e => e.Id).ValueGeneratedOnAdd();
+        modelBuilder.Entity<ContactEntity>(e =>
+        {
+            e.ToTable("Contact");
+            e.HasKey(p => p.Id);
+            e.Property(p => p.Id).HasColumnType("INT").ValueGeneratedNever().UseIdentityColumn();
+            e.Property(p => p.CreatedAt).HasColumnName("CreatedAt").IsRequired();
+        });
+            
+            
     }
 }
