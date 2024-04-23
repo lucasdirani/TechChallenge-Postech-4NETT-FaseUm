@@ -18,4 +18,8 @@
     <Folder Include="Setup\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Postech.PhaseOne.GroupEight.TechChallenge.Infra\Postech.PhaseOne.GroupEight.TechChallenge.Infra.csproj" />
+  </ItemGroup>
+
 </Project>
