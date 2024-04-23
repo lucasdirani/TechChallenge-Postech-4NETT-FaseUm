@@ -4,10 +4,17 @@ using MediatR;
 using System.Reflection;
 using Postech.PhaseOne.GroupEight.TechChallenge.Domain.Commands.Inputs;
 using Postech.PhaseOne.GroupEight.TechChallenge.Api.Setup;
+using Postech.PhaseOne.GroupEight.TechChallenge.Api.Filters;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddEndpointsApiExplorer();
+
+builder.Services.AddMvc(config =>
+{
+    config.Filters.Add(typeof(ExceptionFilter));
+});
+
 builder.Services.AddSwaggerGen();
 
 //builder.Services.AddScoped(typeof(IPipelineBehavior<,>), typeof(IPipelineBehavior<,>));
@@ -16,7 +23,7 @@ builder.Services.AddMediatR(cfg => {
     cfg.RegisterServicesFromAssembly(typeof(Program).Assembly);
 });
 
-
+builder.Services.AddDependencyRepository();
 builder.Services.AddDependencyHandler();
 
 var app = builder.Build();

@@ -10,4 +10,8 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.4" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Postech.PhaseOne.GroupEight.TechChallenge.Domain\Postech.PhaseOne.GroupEight.TechChallenge.Domain.csproj" />
+  </ItemGroup>
+
 </Project>
