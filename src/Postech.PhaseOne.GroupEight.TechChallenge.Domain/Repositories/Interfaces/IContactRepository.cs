@@ -6,8 +6,8 @@ namespace Postech.PhaseOne.GroupEight.TechChallenge.Domain.Repositories.Interfac
 
 public interface IContactRepository
 {
-    Task<ContactEntity> AddContact(AddNewContactHandler addNewContactHandler);
-    Task<ContactEntity> FindContactByAreaCode(FindContactByAreaCodeHandler findContactByAreaCode);
-    Task<bool> DeleteContactById(DeleteContactHandler deleteContact);
-    Task<bool> UpdateContactById(UpdateContactHandler updateContact);
+    Task<ContactEntity> AddContact(ContactEntity contactEntity);
+    Task<ContactEntity> FindContactByAreaCode(ContactEntity contactEntity);
+    Task<bool> DeleteContactById(int id);
+    Task<bool> UpdateContactById(ContactEntity contactEntity);
 }
