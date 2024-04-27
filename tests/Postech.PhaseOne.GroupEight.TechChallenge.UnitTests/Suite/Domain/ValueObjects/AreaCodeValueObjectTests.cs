@@ -1,39 +1,51 @@
 ﻿using FluentAssertions;
 using Postech.PhaseOne.GroupEight.TechChallenge.Domain.Exceptions.ValueObjects;
 using Postech.PhaseOne.GroupEight.TechChallenge.Domain.ValueObjects;
-using System.ComponentModel;
 
 namespace Postech.PhaseOne.GroupEight.TechChallenge.UnitTests.Suite.Domain.ValueObjects
 {
     public class AreaCodeValueObjectTests
     {
-        [Theory(DisplayName = "Constructing a valid AreaCode object")]
-        [Category("AreaCode")]
-        [InlineData("62", RegionValueObject.Goias)]
-        [InlineData("82", RegionValueObject.Alagoas)]
-        [InlineData("68", RegionValueObject.Acre)]
-        [InlineData("11", RegionValueObject.SaoPaulo)]
-        [InlineData("41", RegionValueObject.Parana)]
-        public void AreaCode_ValidAreaCodeData_ShouldConstructAreaCodeObject(string areaCodeValue, RegionValueObject areaCodeRegion)
+        [Theory(DisplayName = "Constructing a valid object of type AreaCodeValueObject")]
+        [MemberData(nameof(GetAreaCodeValues))]
+        [Trait("Action", "Create")]
+        public void Create_ValidData_ShouldCreateAreaCodeValueObject(string areaCodeValue)
         {
-            AreaCodeValueObject areaCode = new(areaCodeValue, areaCodeRegion);
-            areaCode.Value.Should().Be(areaCodeValue);
-            areaCode.Region.Should().Be(areaCodeRegion);
+            AreaCodeValueObject areaCodeValueObject = AreaCodeValueObject.Create(areaCodeValue);
+            areaCodeValueObject.Should().NotBeNull();
+            areaCodeValueObject.Value.Should().Be(areaCodeValue);
+            areaCodeValueObject.Region.Should().NotBeNull();
         }
 
-        [Theory(DisplayName = "Constructing an AreaCode object with an invalid value")]
-        [Category("AreaCode")]
-        [InlineData("", RegionValueObject.Goias)]
-        [InlineData(" ", RegionValueObject.Alagoas)]
-        [InlineData(null, RegionValueObject.Acre)]
-        [InlineData("100", RegionValueObject.SaoPaulo)]
-        [InlineData("4", RegionValueObject.Parana)]
-        [InlineData("A9", RegionValueObject.Sergipe)]
-        public void AreaCode_InvalidAreaCodeData_ShouldThrowAreaCodeValueException(string areaCodeValue, RegionValueObject areaCodeRegion)
+        [Theory(DisplayName = "Construct an object of type AreaCodeValueObject with an unsupported area code value")]
+        [InlineData("")]
+        [InlineData(" ")]
+        [InlineData("01")]
+        [InlineData("90")]
+        [InlineData("100")]
+        [InlineData("1000")]
+        [InlineData("D1")]
+        [Trait("Action", "Create")]
+        public void Create_NotSupportedAreaCodeValue_ShouldThrowAreaCodeValueNotSupportedException(string areaCodeValue)
         {
-            AreaCodeValueException exception = Assert.Throws<AreaCodeValueException>(() => new AreaCodeValueObject(areaCodeValue, areaCodeRegion));
+            AreaCodeValueNotSupportedException exception = Assert.Throws<AreaCodeValueNotSupportedException>(() => AreaCodeValueObject.Create(areaCodeValue));
             exception.Message.Should().NotBeNullOrEmpty();
-            exception.Value.Should().Be(areaCodeValue);
+            exception.AreaCodeValue.Should().Be(areaCodeValue);
+        }
+
+        public static TheoryData<string> GetAreaCodeValues()
+        {
+            return new TheoryData<string>
+            {
+                "11", "12", "13", "14", "15", "16", "17", "18", "19",
+                "21", "22", "24", "27", "28", "31", "32", "33", "34",
+                "35", "37", "38", "41", "42", "43", "44", "45", "46",
+                "47", "48", "49", "51", "53", "54", "55", "61", "62",
+                "63", "64", "65", "66", "67", "68", "69", "71", "73",
+                "74", "75", "77", "79", "81", "82", "83", "84", "85",
+                "86", "87", "88", "89", "91", "92", "93", "94", "95",
+                "96", "97", "98", "99"
+            };
         }
     }
 }

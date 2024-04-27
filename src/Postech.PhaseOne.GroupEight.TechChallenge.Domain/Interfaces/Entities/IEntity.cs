@@ -2,8 +2,8 @@
 {
     public interface IEntity
     {
-        Guid Id { get; set; }
-        DateTime CreatedAt { get; set; }
-        DateTime? ModifiedAt { get; set; }
+        Guid Id { get; }
+        DateTime CreatedAt { get; }
+        DateTime? ModifiedAt { get; }
     }
 }

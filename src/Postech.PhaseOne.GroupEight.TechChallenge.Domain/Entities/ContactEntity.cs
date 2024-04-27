@@ -2,14 +2,16 @@
 
 namespace Postech.PhaseOne.GroupEight.TechChallenge.Domain.Entities
 {
-    public class ContactEntity : EntityBase
-    {             
-        public NameValueObject? Name { get; set; }
+    public class ContactEntity(
+        ContactNameValueObject contactName,
+        ContactEmailValueObject contactEmail,
+        ContactPhoneValueObject contactPhone) 
+        : EntityBase()
+    {
+        public ContactNameValueObject ContactName { get; private set; } = contactName;
 
-        public EmailValueObject? Email { get; set; }
+        public ContactEmailValueObject ContactEmail { get; private set; } = contactEmail;
 
-        public PhoneValueObject? Phone { get; set; }
-        
-        public List<AddressValueObject>? Addresses { get; set; }
+        public ContactPhoneValueObject ContactPhone { get; private set; } = contactPhone;
     }
 }
