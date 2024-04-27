@@ -4,10 +4,10 @@ using System.Security.Principal;
 
 namespace Postech.PhaseOne.GroupEight.TechChallenge.Domain.Repositories.Interfaces;
 
-public interface IContactRepository
+public interface IRepository<T> where T : EntityBase
 {
-    Task<ContactEntity> AddContact(ContactEntity contactEntity);
-    Task<ContactEntity> FindContactByAreaCode(ContactEntity contactEntity);
+    Task<T> AddContact(T entity);
+    Task<T> FindContactByAreaCode(T contactEntity);
     Task<bool> DeleteContactById(int id);
-    Task<bool> UpdateContactById(ContactEntity contactEntity);
+    Task<bool> UpdateContactById(T contactEntity);
 }

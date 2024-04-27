@@ -1,6 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Postech.PhaseOne.GroupEight.TechChallenge.Domain.Entities;
-using Postech.PhaseOne.GroupEight.TechChallenge.Infra.Configurations;
 
 namespace Postech.PhaseOne.GroupEight.TechChallenge.Infra;
 

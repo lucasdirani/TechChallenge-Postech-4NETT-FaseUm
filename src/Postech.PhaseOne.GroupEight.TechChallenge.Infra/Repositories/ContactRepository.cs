@@ -4,7 +4,7 @@ using Postech.PhaseOne.GroupEight.TechChallenge.Domain.Repositories.Interfaces;
 
 namespace Postech.PhaseOne.GroupEight.TechChallenge.Infra.Repositories;
 
-public class ContactRepository : IContactRepository
+public class ContactRepository : IRepository<ContactEntity>
 {
     public async Task<ContactEntity> AddContact(ContactEntity contactEntity)
     {
