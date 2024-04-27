@@ -2,7 +2,7 @@
 using Postech.PhaseOne.GroupEight.TechChallenge.Domain.Handlers.Contacts;
 using System.Security.Principal;
 
-namespace Postech.PhaseOne.GroupEight.TechChallenge.Domain.Repositories.Interfaces;
+namespace Postech.PhaseOne.GroupEight.TechChallenge.Domain.Interfaces.Repositories;
 
 public interface IContactRepository
 {

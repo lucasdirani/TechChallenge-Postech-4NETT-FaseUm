@@ -9,7 +9,7 @@ services:
     ports:
       - "5432:5432"
     environment:
-      POSTGRES_DB: "ContactDB"
+      POSTGRES_DB: "ContactManagementDB"
       POSTGRES_USER: "admin"
       POSTGRES_PASSWORD: "Admin*123"
 

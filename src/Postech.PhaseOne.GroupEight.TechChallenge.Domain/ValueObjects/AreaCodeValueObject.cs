@@ -8,10 +8,15 @@ namespace Postech.PhaseOne.GroupEight.TechChallenge.Domain.ValueObjects
         public string Value { get; }
         public RegionValueObject Region { get; }
 
-        private AreaCodeValueObject(string value, RegionValueObject region)
+        private AreaCodeValueObject(string value, RegionValueObject region) 
+            : this(value)
+        {
+            Region = region;
+        }
+
+        private AreaCodeValueObject(string value)
         {
             Value = value;
-            Region = region;
         }
 
         public static AreaCodeValueObject Create(string areaCodeValue)
