@@ -20,7 +20,7 @@ namespace Postech.PhaseOne.GroupEight.TechChallenge.Domain.Handlers.Contacts
 
             var entity = new ContactEntity();
 
-            DomainException.ThrowWhen(request.Name == "", "Nome é obrigatproio");
+            DomainException.ThrowWhen(request.Name == "", "Nome é obrigatório");
 
             await _contactRepository.InsertAsync(entity);
             return new DefaultOutput(true, "Contato inserido com sucesso");
