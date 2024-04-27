@@ -8,6 +8,7 @@
 
 	<ItemGroup>
 		<PackageReference Include="MediatR" Version="12.2.0" />
+		<PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="11.1.0" />
 		<PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.4" />
 		<PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.4">
@@ -23,6 +24,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<ProjectReference Include="..\Postech.PhaseOne.GroupEight.TechChallenge.Domain\Postech.PhaseOne.GroupEight.TechChallenge.Domain.csproj" />
 		<ProjectReference Include="..\Postech.PhaseOne.GroupEight.TechChallenge.Infra\Postech.PhaseOne.GroupEight.TechChallenge.Infra.csproj" />
 	</ItemGroup>
 
