@@ -5,15 +5,14 @@ using System.Reflection;
 using Postech.PhaseOne.GroupEight.TechChallenge.Domain.Commands.Inputs;
 using Postech.PhaseOne.GroupEight.TechChallenge.Api.Setup;
 using Postech.PhaseOne.GroupEight.TechChallenge.Api.Filters;
+using Microsoft.AspNetCore.Diagnostics;
+using Postech.PhaseOne.GroupEight.TechChallenge.Domain.Exceptions;
+using Postech.PhaseOne.GroupEight.TechChallenge.Domain.Commands.Outputs;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddEndpointsApiExplorer();
 
-builder.Services.AddMvc(config =>
-{
-    config.Filters.Add(typeof(ExceptionFilter));
-});
 
 builder.Services.AddSwaggerGen();
 
@@ -36,7 +35,33 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+app.UseExceptionHandler(errorApp =>
+{
+    errorApp.Run(async context =>
+    {
+        var exceptionHandlerPathFeature = context.Features.Get<IExceptionHandlerPathFeature>();
+        if (exceptionHandlerPathFeature?.Error is not null)
+        {
+            var status = 500;
+            var message = exceptionHandlerPathFeature.Error.Message;
 
+            if (exceptionHandlerPathFeature?.Error is DomainException)
+            {
+                status = 404; // Bad Request                
+            }
+            else if (exceptionHandlerPathFeature?.Error is NotFoundException)
+            {
+                status = 401; // Not found
+            } else
+            {
+                message = "Ocorreu um erro inesperado";
+            }
+            
+            context.Response.StatusCode = status;
+            await context.Response.WriteAsJsonAsync(new DefaultOutput(false, message)); 
+        }
+    });
+});
 
 
 app.MapPost("/contacts", async (IMediator mediator, ContactInput request) =>

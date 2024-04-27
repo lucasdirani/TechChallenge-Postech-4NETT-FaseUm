@@ -2,6 +2,7 @@
 using Postech.PhaseOne.GroupEight.TechChallenge.Domain.Commands.Inputs;
 using Postech.PhaseOne.GroupEight.TechChallenge.Domain.Commands.Outputs;
 using Postech.PhaseOne.GroupEight.TechChallenge.Domain.Entities;
+using Postech.PhaseOne.GroupEight.TechChallenge.Domain.Exceptions;
 using Postech.PhaseOne.GroupEight.TechChallenge.Domain.Interfaces.IRepository;
 
 namespace Postech.PhaseOne.GroupEight.TechChallenge.Domain.Handlers.Contacts
@@ -18,6 +19,8 @@ namespace Postech.PhaseOne.GroupEight.TechChallenge.Domain.Handlers.Contacts
         {
 
             var entity = new ContactEntity();
+
+            DomainException.ThrowWhen(request.Name == "", "Nome é obrigatproio");
 
             await _contactRepository.InsertAsync(entity);
             return new DefaultOutput(true, "Contato inserido com sucesso");
