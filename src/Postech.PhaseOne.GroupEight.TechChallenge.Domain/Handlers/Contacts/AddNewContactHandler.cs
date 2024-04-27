@@ -4,6 +4,7 @@ using Postech.PhaseOne.GroupEight.TechChallenge.Domain.Commands.Outputs;
 using Postech.PhaseOne.GroupEight.TechChallenge.Domain.Entities;
 using Postech.PhaseOne.GroupEight.TechChallenge.Domain.Exceptions;
 using Postech.PhaseOne.GroupEight.TechChallenge.Domain.Interfaces.IRepository;
+using Postech.PhaseOne.GroupEight.TechChallenge.Domain.ValueObjects;
 
 namespace Postech.PhaseOne.GroupEight.TechChallenge.Domain.Handlers.Contacts
 {
@@ -17,8 +18,10 @@ namespace Postech.PhaseOne.GroupEight.TechChallenge.Domain.Handlers.Contacts
         }
         public async Task<DefaultOutput> Handle(ContactInput request, CancellationToken cancellationToken)
         {
-
-            var entity = new ContactEntity();
+            ContactNameValueObject contactName = new ContactNameValueObject(request.Name, request.LastName);
+            ContactEmailValueObject contactEmail = new ContactEmailValueObject(request.Email);
+            ContactPhoneValueObject contactPhone = new ContactPhoneValueObject(request.Phone, AreaCodeValueObject.Create(request.AreaCode));
+            var entity = new ContactEntity(contactName, contactEmail, contactPhone);
 
             DomainException.ThrowWhen(request.Name == "", "Nome é obrigatório");
 
