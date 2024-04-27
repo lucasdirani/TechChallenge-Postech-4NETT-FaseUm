@@ -1,21 +1,16 @@
-﻿using MediatR;
-using Postech.PhaseOne.GroupEight.TechChallenge.Domain.Commands.Inputs;
-using Postech.PhaseOne.GroupEight.TechChallenge.Domain.Commands.Outputs;
-using Postech.PhaseOne.GroupEight.TechChallenge.Domain.Handlers.Contacts;
-using Postech.PhaseOne.GroupEight.TechChallenge.Domain.Interfaces.IRepository;
-using Postech.PhaseOne.GroupEight.TechChallenge.Infra.Repositories;
+﻿using Postech.PhaseOne.GroupEight.TechChallenge.Domain.Interfaces.Repositories;
+using Postech.PhaseOne.GroupEight.TechChallenge.Infra.Data.Repositories;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Postech.PhaseOne.GroupEight.TechChallenge.Api.Setup
 {
+    [ExcludeFromCodeCoverage]
     public static class RepositorySetup
     {
         public static void AddDependencyRepository(this IServiceCollection services)
         {
-            if (services == null)
-                throw new ArgumentNullException(nameof(services));
-
+            ArgumentNullException.ThrowIfNull(services);
             services.AddScoped<IContactRepository, ContactRepository>();
-
         }
     }
 }

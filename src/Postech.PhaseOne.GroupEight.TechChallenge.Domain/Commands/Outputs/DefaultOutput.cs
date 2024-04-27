@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Diagnostics.CodeAnalysis;
 
 namespace Postech.PhaseOne.GroupEight.TechChallenge.Domain.Commands.Outputs
 {
-    public class DefaultOutput
+    [ExcludeFromCodeCoverage]
+    public record DefaultOutput
     {
         public DefaultOutput(bool success, string message, object data) 
         {
@@ -18,11 +15,11 @@ namespace Postech.PhaseOne.GroupEight.TechChallenge.Domain.Commands.Outputs
         public DefaultOutput(bool success, string message)
         {
             Success = success;
-            Message = message;
-            
+            Message = message;          
         }
-        public bool Success { get; set; }
-        public string Message { get; set; }
-        public object Data { get; set; }
+
+        public bool Success { get; init; }
+        public string Message { get; init; }
+        public object Data { get; init; }
     }
 }
