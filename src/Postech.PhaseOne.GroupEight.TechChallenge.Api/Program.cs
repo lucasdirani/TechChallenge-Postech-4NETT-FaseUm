@@ -1,12 +1,10 @@
 using MediatR;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Postech.PhaseOne.GroupEight.TechChallenge.Api.Setup;
 using Postech.PhaseOne.GroupEight.TechChallenge.Domain.Commands.Inputs;
 using Postech.PhaseOne.GroupEight.TechChallenge.Domain.Commands.Outputs;
 using Postech.PhaseOne.GroupEight.TechChallenge.Domain.Exceptions.Common;
-using Postech.PhaseOne.GroupEight.TechChallenge.Infra.Data.Contexts;
 using System.Net;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
@@ -14,13 +12,8 @@ IConfigurationRoot configuration = new ConfigurationBuilder().AddJsonFile("appse
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-builder.Services.AddDbContext<ContactManagementDbContext>(options => 
-    options.UseNpgsql(configuration.GetConnectionString("DefaultConnection")), 
-    ServiceLifetime.Scoped
-);
-builder.Services.AddMediatR(cfg => {
-    cfg.RegisterServicesFromAssembly(typeof(Program).Assembly);
-});
+builder.Services.AddDbContext(configuration);
+builder.Services.AddMediatR();
 builder.Services.AddDependencyRepository();
 builder.Services.AddDependencyHandler();
 

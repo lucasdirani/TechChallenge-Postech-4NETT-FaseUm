@@ -28,10 +28,6 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<Folder Include="Setup\" />
-	</ItemGroup>
-
-	<ItemGroup>
 		<ProjectReference Include="..\Postech.PhaseOne.GroupEight.TechChallenge.Domain\Postech.PhaseOne.GroupEight.TechChallenge.Domain.csproj" />
 		<ProjectReference Include="..\Postech.PhaseOne.GroupEight.TechChallenge.Infra\Postech.PhaseOne.GroupEight.TechChallenge.Infra.csproj" />
 	</ItemGroup>
