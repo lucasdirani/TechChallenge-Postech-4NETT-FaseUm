@@ -10,14 +10,12 @@ namespace Postech.PhaseOne.GroupEight.TechChallenge.Domain.Interfaces.Repositori
         Task<bool> ExistsAsync(Expression<Func<T, bool>> expression);
         Task<List<T>> FindAsync(Expression<Func<T, bool>> expression);
         Task<List<T>> GetAllAsync();
-        Task<T> GetByIdAsync(TId id);
-        Task<T> GetByUniqueIdAsync(Guid uniqueId);
+        Task<T?> GetByIdAsync(TId id);
         Task InsertAsync(T entity);
         Task InsertRangeAsync(List<T> entities);
-        void LogicalDelete(T obj);
         void SaveChanges();
         Task SaveChangesAsync();
-        Task UpdateAsync(T entity);
+        void Update(T entity);
         void UpdateRange(List<T> entities);
     }
 }

@@ -1,22 +1,25 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Postech.PhaseOne.GroupEight.TechChallenge.Domain.Entities;
 using Postech.PhaseOne.GroupEight.TechChallenge.Domain.Interfaces.Repositories;
+using Postech.PhaseOne.GroupEight.TechChallenge.Infra.Data.Contexts;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
 
 namespace Postech.PhaseOne.GroupEight.TechChallenge.Infra.Data.Repositories
 {
     [ExcludeFromCodeCoverage]
-    public class ContactRepository : IContactRepository
+    public class ContactRepository(ContactManagementDbContext dbContext) : IContactRepository
     {
-        public Task<bool> ExistsAsync(Expression<Func<ContactEntity, bool>> expression)
+        private readonly ContactManagementDbContext _dbContext = dbContext;
+
+        public async Task<bool> ExistsAsync(Expression<Func<ContactEntity, bool>> expression)
         {
-            throw new NotImplementedException();
+            return await _dbContext.Contacts.AnyAsync(expression);
         }
 
-        public Task<List<ContactEntity>> FindAsync(Expression<Func<ContactEntity, bool>> expression)
+        public async Task<List<ContactEntity>> FindAsync(Expression<Func<ContactEntity, bool>> expression)
         {
-            throw new NotImplementedException();
+            return await _dbContext.Contacts.Where(expression).ToListAsync();
         }
 
         public async Task<List<ContactEntity>> GetAllAsync()
@@ -24,14 +27,9 @@ namespace Postech.PhaseOne.GroupEight.TechChallenge.Infra.Data.Repositories
             return await _dbContext.Contacts.ToListAsync();
         }
 
-        public Task<ContactEntity> GetByIdAsync(Guid id)
+        public async Task<ContactEntity?> GetByIdAsync(Guid id)
         {
             return await _dbContext.Contacts.FindAsync(id);
-        }
-
-        public async Task<ContactEntity> GetByUniqueIdAsync(Guid id)
-        {
-            return await _dbContext.Contacts.FirstOrDefaultAsync(c => c.Id == id);
         }
 
         public async Task InsertAsync(ContactEntity entity)
@@ -44,11 +42,6 @@ namespace Postech.PhaseOne.GroupEight.TechChallenge.Infra.Data.Repositories
             await _dbContext.Contacts.AddRangeAsync(entities);
         }
 
-        public void LogicalDelete(ContactEntity obj)
-        {
-            obj.IsDeleted = true;
-        }
-
         public void SaveChanges()
         {
             _dbContext.SaveChanges();
@@ -59,7 +52,7 @@ namespace Postech.PhaseOne.GroupEight.TechChallenge.Infra.Data.Repositories
             await _dbContext.SaveChangesAsync();
         }
 
-        public async Task UpdateAsync(ContactEntity entity)
+        public void Update(ContactEntity entity)
         {
             _dbContext.Contacts.Update(entity);
         }
