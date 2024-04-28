@@ -13,10 +13,7 @@ namespace Postech.PhaseOne.GroupEight.TechChallenge.Domain.ValueObjects
 
         private ContactPhoneValueObject(string number)
         {
-            if (!PhoneNumberRegex().IsMatch(number))
-            {
-                throw new ContactPhoneNumberException("The phone number must only have eight or nine digits, and must not contain special characters, such as hyphens.", number);
-            }
+            ContactPhoneNumberException.ThrowIfFormatIsInvalid(number, PhoneNumberRegex());
             Number = number;
         }
 
