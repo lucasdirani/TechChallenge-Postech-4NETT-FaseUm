@@ -1,4 +1,5 @@
-﻿using Postech.PhaseOne.GroupEight.TechChallenge.Domain.Entities;
+﻿using Microsoft.EntityFrameworkCore;
+using Postech.PhaseOne.GroupEight.TechChallenge.Domain.Entities;
 using Postech.PhaseOne.GroupEight.TechChallenge.Domain.Interfaces.Repositories;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
@@ -18,54 +19,54 @@ namespace Postech.PhaseOne.GroupEight.TechChallenge.Infra.Data.Repositories
             throw new NotImplementedException();
         }
 
-        public Task<List<ContactEntity>> GetAllAsync()
+        public async Task<List<ContactEntity>> GetAllAsync()
         {
-            throw new NotImplementedException();
+            return await _dbContext.Contacts.ToListAsync();
         }
 
         public Task<ContactEntity> GetByIdAsync(Guid id)
         {
-            throw new NotImplementedException();
+            return await _dbContext.Contacts.FindAsync(id);
         }
 
-        public Task<ContactEntity> GetByUniqueIdAsync(Guid uniqueId)
+        public async Task<ContactEntity> GetByUniqueIdAsync(Guid id)
         {
-            throw new NotImplementedException();
+            return await _dbContext.Contacts.FirstOrDefaultAsync(c => c.Id == id);
         }
 
-        public Task InsertAsync(ContactEntity entity)
+        public async Task InsertAsync(ContactEntity entity)
         {
-            throw new NotImplementedException();
+            await _dbContext.Contacts.AddAsync(entity);
         }
 
-        public Task InsertRangeAsync(List<ContactEntity> entities)
+        public async Task InsertRangeAsync(List<ContactEntity> entities)
         {
-            throw new NotImplementedException();
+            await _dbContext.Contacts.AddRangeAsync(entities);
         }
 
         public void LogicalDelete(ContactEntity obj)
         {
-            throw new NotImplementedException();
+            obj.IsDeleted = true;
         }
 
         public void SaveChanges()
         {
-            throw new NotImplementedException();
+            _dbContext.SaveChanges();
         }
 
-        public Task SaveChangesAsync()
+        public async Task SaveChangesAsync()
         {
-            throw new NotImplementedException();
+            await _dbContext.SaveChangesAsync();
         }
 
-        public Task UpdateAsync(ContactEntity entity)
+        public async Task UpdateAsync(ContactEntity entity)
         {
-            throw new NotImplementedException();
+            _dbContext.Contacts.Update(entity);
         }
 
         public void UpdateRange(List<ContactEntity> entities)
         {
-            throw new NotImplementedException();
+            _dbContext.Contacts.UpdateRange(entities);
         }
     }
 }
