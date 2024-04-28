@@ -1,6 +1,10 @@
-﻿namespace Postech.PhaseOne.GroupEight.TechChallenge.Domain.Exceptions.ValueObjects
+﻿using Postech.PhaseOne.GroupEight.TechChallenge.Domain.Exceptions.Common;
+using System.Diagnostics.CodeAnalysis;
+
+namespace Postech.PhaseOne.GroupEight.TechChallenge.Domain.Exceptions.ValueObjects
 {
-    public class ContactLastNameException(string message, string lastNameValue) : Exception(message)
+    [ExcludeFromCodeCoverage]
+    public class ContactLastNameException(string message, string lastNameValue) : DomainException(message)
     {
         public string LastNameValue { get; } = lastNameValue;
     }
