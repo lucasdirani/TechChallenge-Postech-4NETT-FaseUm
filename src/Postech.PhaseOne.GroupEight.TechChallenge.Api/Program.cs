@@ -1,13 +1,11 @@
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Hosting;
 using MediatR;
-using System.Reflection;
-using Postech.PhaseOne.GroupEight.TechChallenge.Domain.Commands.Inputs;
-using Postech.PhaseOne.GroupEight.TechChallenge.Api.Setup;
-using Postech.PhaseOne.GroupEight.TechChallenge.Api.Filters;
 using Microsoft.AspNetCore.Diagnostics;
-using Postech.PhaseOne.GroupEight.TechChallenge.Domain.Exceptions;
+using Microsoft.EntityFrameworkCore;
+using Postech.PhaseOne.GroupEight.TechChallenge.Api.Setup;
+using Postech.PhaseOne.GroupEight.TechChallenge.Domain.Commands.Inputs;
 using Postech.PhaseOne.GroupEight.TechChallenge.Domain.Commands.Outputs;
+using Postech.PhaseOne.GroupEight.TechChallenge.Domain.Exceptions;
+using Postech.PhaseOne.GroupEight.TechChallenge.Infra;
 
 var builder = WebApplication.CreateBuilder(args);
 
