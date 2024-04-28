@@ -1,74 +1,77 @@
-﻿using Postech.PhaseOne.GroupEight.TechChallenge.Domain.Entities;
+﻿using Microsoft.EntityFrameworkCore;
+using Postech.PhaseOne.GroupEight.TechChallenge.Domain.Entities;
 using Postech.PhaseOne.GroupEight.TechChallenge.Domain.Interfaces.IRepository;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Postech.PhaseOne.GroupEight.TechChallenge.Infra.Repositories
 {
     public class ContactRepository : IContactRepository
     {
-        public Task<bool> ExistsAsync(Expression<Func<ContactEntity, bool>> expression)
+        private readonly ApplicationDbContext _dbContext;
+
+        public ContactRepository(ApplicationDbContext dbContext)
         {
-            throw new NotImplementedException();
+            _dbContext = dbContext;
         }
 
-        public Task<List<ContactEntity>> FindAsync(Expression<Func<ContactEntity, bool>> expression)
+        public async Task<bool> ExistsAsync(Expression<Func<ContactEntity, bool>> expression)
         {
-            throw new NotImplementedException();
+            return await _dbContext.Contacts.AnyAsync(expression);
         }
 
-        public Task<List<ContactEntity>> GetAllAsync()
+        public async Task<List<ContactEntity>> FindAsync(Expression<Func<ContactEntity, bool>> expression)
         {
-            throw new NotImplementedException();
+            return await _dbContext.Contacts.Where(expression).ToListAsync();
         }
 
-        public Task<ContactEntity> GetByIdAsync(int id)
+        public async Task<List<ContactEntity>> GetAllAsync()
         {
-            throw new NotImplementedException();
+            return await _dbContext.Contacts.ToListAsync();
         }
 
-        public Task<ContactEntity> GetByUniqueIdAsync(Guid uniqueId)
+        public async Task<ContactEntity> GetByIdAsync(Guid id)
         {
-            throw new NotImplementedException();
+            return await _dbContext.Contacts.FindAsync(id);
         }
 
-        public Task InsertAsync(ContactEntity entity)
+        public async Task<ContactEntity> GetByUniqueIdAsync(Guid id)
         {
-            throw new NotImplementedException();
+            return await _dbContext.Contacts.FirstOrDefaultAsync(c => c.Id == id);
         }
 
-        public Task InsertRangeAsync(List<ContactEntity> entities)
+        public async Task InsertAsync(ContactEntity entity)
         {
-            throw new NotImplementedException();
+            await _dbContext.Contacts.AddAsync(entity);
+        }
+
+        public async Task InsertRangeAsync(List<ContactEntity> entities)
+        {
+            await _dbContext.Contacts.AddRangeAsync(entities);
         }
 
         public void LogicalDelete(ContactEntity obj)
         {
-            throw new NotImplementedException();
+            obj.IsDeleted = true;
         }
 
         public void SaveChanges()
         {
-            throw new NotImplementedException();
+            _dbContext.SaveChanges();
         }
 
-        public Task SaveChangesAsync()
+        public async Task SaveChangesAsync()
         {
-            throw new NotImplementedException();
+            await _dbContext.SaveChangesAsync();
         }
 
-        public Task UpdateAsync(ContactEntity entity)
+        public async Task UpdateAsync(ContactEntity entity)
         {
-            throw new NotImplementedException();
+            _dbContext.Contacts.Update(entity);
         }
 
         public void UpdateRange(List<ContactEntity> entities)
         {
-            throw new NotImplementedException();
+            _dbContext.Contacts.UpdateRange(entities);
         }
     }
 }

@@ -1,13 +1,7 @@
 ﻿using Postech.PhaseOne.GroupEight.TechChallenge.Domain.Entities;
-using Postech.PhaseOne.GroupEight.TechChallenge.Domain.Handlers.Contacts;
-using System.Security.Principal;
+using static Postech.PhaseOne.GroupEight.TechChallenge.Domain.Interfaces.IRepository.IRepository;
 
 namespace Postech.PhaseOne.GroupEight.TechChallenge.Domain.Repositories.Interfaces;
-
-public interface IRepository<T> where T : EntityBase
+public interface IContactRepository : IRepository<ContactEntity, Guid>
 {
-    Task<T> AddContact(T entity);
-    Task<T> FindContactByAreaCode(T contactEntity);
-    Task<bool> DeleteContactById(int id);
-    Task<bool> UpdateContactById(T contactEntity);
 }

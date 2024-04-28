@@ -13,5 +13,6 @@ namespace Postech.PhaseOne.GroupEight.TechChallenge.Domain.Entities
         public ContactEmailValueObject ContactEmail { get; private set; } = contactEmail;
 
         public ContactPhoneValueObject ContactPhone { get; private set; } = contactPhone;
+        public bool? IsDeleted { get; set; } = default;
     }
 }
