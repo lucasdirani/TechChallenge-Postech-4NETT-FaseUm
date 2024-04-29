@@ -8,7 +8,7 @@ using Postech.PhaseOne.GroupEight.TechChallenge.Domain.ValueObjects;
 
 namespace Postech.PhaseOne.GroupEight.TechChallenge.UnitTests.Suite.Domain.Factories
 {
-    //TODO: Revisar índices nas tabelas e testes unitários da classe ContactPhoneValueObject
+    //TODO: Revisar índices nas tabelas
     public class ContactPhoneValueObjectFactoryTests
     {
         [Theory(DisplayName = "Creating a new valid phone number")]
