@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Postech.PhaseOne.GroupEight.TechChallenge.Domain.Entities;
 using Postech.PhaseOne.GroupEight.TechChallenge.Domain.Interfaces.Repositories;
+using Postech.PhaseOne.GroupEight.TechChallenge.Domain.ValueObjects;
 using Postech.PhaseOne.GroupEight.TechChallenge.Infra.Data.Contexts;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
@@ -27,9 +28,19 @@ namespace Postech.PhaseOne.GroupEight.TechChallenge.Infra.Data.Repositories
             return await _dbContext.Contacts.ToListAsync();
         }
 
+        public async Task<AreaCodeValueObject?> GetAreaCodeByValueAsync(string areaCodeValue)
+        {
+            return await _dbContext.AreaCodes.FirstOrDefaultAsync(areaCode => areaCode.Value == areaCodeValue);
+        }
+
         public async Task<ContactEntity?> GetByIdAsync(Guid id)
         {
             return await _dbContext.Contacts.FindAsync(id);
+        }
+
+        public async Task<ContactPhoneValueObject?> GetContactPhoneByNumberAndAreaCodeValueAsync(string phoneNumber, string areaCodeValue)
+        {
+            return await _dbContext.ContactPhones.FirstOrDefaultAsync(contactPhone => contactPhone.Number == phoneNumber && contactPhone.AreaCode.Value == areaCodeValue);
         }
 
         public async Task InsertAsync(ContactEntity entity)

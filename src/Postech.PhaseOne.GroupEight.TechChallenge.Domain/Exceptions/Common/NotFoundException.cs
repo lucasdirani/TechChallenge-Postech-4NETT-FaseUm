@@ -5,7 +5,7 @@ namespace Postech.PhaseOne.GroupEight.TechChallenge.Domain.Exceptions.Common
     [ExcludeFromCodeCoverage]
     public class NotFoundException(string message) : Exception(message)
     {
-        public static void ThrowWhenNullEntity(object entity, string errorMessage)
+        public static void ThrowWhenNullEntity(object? entity, string errorMessage)
         {
             if (entity is not null) return;
             throw new NotFoundException(errorMessage);
