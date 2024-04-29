@@ -15,6 +15,7 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext(configuration);
 builder.Services.AddMediatR();
 builder.Services.AddDependencyRepository();
+builder.Services.AddDependencyFactory();
 builder.Services.AddDependencyHandler();
 
 WebApplication app = builder.Build();
