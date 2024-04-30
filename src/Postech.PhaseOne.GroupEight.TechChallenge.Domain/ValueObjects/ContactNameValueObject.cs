@@ -7,14 +7,8 @@ namespace Postech.PhaseOne.GroupEight.TechChallenge.Domain.ValueObjects
     {
         public ContactNameValueObject(string firstName, string lastName)
         {
-            if (!FirstNameRegex().IsMatch(firstName))
-            {
-                throw new ContactFirstNameException("The contact's first name must only contain letters (lowercase or capital letters), accents and hyphens.", firstName);
-            }
-            if (!LastNameRegex().IsMatch(lastName))
-            {
-                throw new ContactLastNameException("The contact's last name must only contain letters (lowercase or capital letters), accents and hyphens.", lastName);
-            }
+            ContactFirstNameException.ThrowIfFormatIsInvalid(firstName, FirstNameRegex());
+            ContactLastNameException.ThrowIfFormatIsInvalid(lastName, LastNameRegex());
             FirstName = firstName;
             LastName = lastName;
         }

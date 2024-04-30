@@ -7,10 +7,7 @@ namespace Postech.PhaseOne.GroupEight.TechChallenge.Domain.ValueObjects
     {
         public ContactEmailValueObject(string value)
         {
-            if (!EmailValueRegex().IsMatch(value))
-            {
-                throw new ContactEmailAddressException("The email address is not in a valid format.", value);
-            }
+            ContactEmailAddressException.ThrowIfFormatIsInvalid(value, EmailValueRegex());
             Value = value;
         }
 

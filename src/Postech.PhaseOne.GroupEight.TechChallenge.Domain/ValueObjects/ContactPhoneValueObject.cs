@@ -1,18 +1,22 @@
-﻿using Postech.PhaseOne.GroupEight.TechChallenge.Domain.Exceptions.ValueObjects;
+﻿using Postech.PhaseOne.GroupEight.TechChallenge.Domain.Exceptions.Common;
+using Postech.PhaseOne.GroupEight.TechChallenge.Domain.Exceptions.ValueObjects;
 using System.Text.RegularExpressions;
 
 namespace Postech.PhaseOne.GroupEight.TechChallenge.Domain.ValueObjects
 {
     public partial record ContactPhoneValueObject
     {
-        public ContactPhoneValueObject(string phoneNumber, AreaCodeValueObject areaCode)
+        public ContactPhoneValueObject(string phoneNumber, AreaCodeValueObject? areaCode)
+            : this(phoneNumber)
         {
-            if (!PhoneNumberRegex().IsMatch(phoneNumber))
-            {
-                throw new ContactPhoneNumberException("The phone number must only have eight or nine digits, and must not contain special characters, such as hyphens.", phoneNumber);
-            }
-            Number = phoneNumber;
+            NotFoundException.ThrowWhenNullEntity(areaCode, "The area code is required");
             AreaCode = areaCode;
+        }
+
+        private ContactPhoneValueObject(string number)
+        {
+            ContactPhoneNumberException.ThrowIfFormatIsInvalid(number, PhoneNumberRegex());
+            Number = number;
         }
 
         public string Number { get; init; }
