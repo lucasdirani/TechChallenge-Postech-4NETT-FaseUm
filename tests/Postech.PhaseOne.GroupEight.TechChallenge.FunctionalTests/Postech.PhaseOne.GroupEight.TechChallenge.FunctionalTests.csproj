@@ -1,0 +1,37 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>net8.0</TargetFramework>
+		<Nullable>enable</Nullable>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<NoWarn>CS8618</NoWarn>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<SpecFlowFeatureFiles Remove="Features\Feature1.feature" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.9.0" />
+		<PackageReference Include="SpecFlow.Plus.LivingDocPlugin" Version="3.9.57" />
+		<PackageReference Include="SpecFlow.xUnit" Version="3.9.74" />
+		<PackageReference Include="xunit" Version="2.8.0" />
+		<PackageReference Include="xunit.runner.visualstudio" Version="2.8.0">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+		<PackageReference Include="FluentAssertions" Version="6.12.0" />
+		<PackageReference Include="Moq" Version="4.20.70" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<Folder Include="Drivers\" />
+		<Folder Include="Features\" />
+		<Folder Include="Support\" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\..\src\Postech.PhaseOne.GroupEight.TechChallenge.Domain\Postech.PhaseOne.GroupEight.TechChallenge.Domain.csproj" />
+	</ItemGroup>
+
+</Project>
