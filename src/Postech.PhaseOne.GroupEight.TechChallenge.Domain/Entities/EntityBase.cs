@@ -1,7 +1,9 @@
 ﻿using Postech.PhaseOne.GroupEight.TechChallenge.Domain.Interfaces.Entities;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Postech.PhaseOne.GroupEight.TechChallenge.Domain.Entities
 {
+    [ExcludeFromCodeCoverage]
     public abstract class EntityBase : IEntity
     {
         public Guid Id { get; }
@@ -20,6 +22,12 @@ namespace Postech.PhaseOne.GroupEight.TechChallenge.Domain.Entities
         public bool IsActive()
         {
             return Active;
+        }
+
+        public void Inactivate()
+        {
+            Active = false;
+            ModifiedAt = DateTime.UtcNow;
         }
     }
 }

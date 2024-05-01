@@ -13,6 +13,7 @@ namespace Postech.PhaseOne.GroupEight.TechChallenge.Api.Setup
         {
             ArgumentNullException.ThrowIfNull(services);
             services.AddScoped<IRequestHandler<ContactInput, DefaultOutput>, AddNewContactHandler>();
+            services.AddScoped<IRequestHandler<DeleteContactInput, DefaultOutput>, DeleteContactHandler>();
         }
     }
 }
