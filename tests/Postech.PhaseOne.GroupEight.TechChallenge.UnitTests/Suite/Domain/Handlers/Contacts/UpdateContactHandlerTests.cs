@@ -11,7 +11,7 @@ using Postech.PhaseOne.GroupEight.TechChallenge.Domain.ValueObjects;
 
 namespace Postech.PhaseOne.GroupEight.TechChallenge.UnitTests.Suite.Domain.Handlers.Contacts
 {
-    public class UpdateContactHandlerTests
+    public class UpdateContactHandlerTests 
     {
         private readonly Faker _faker = new("pt_BR");
 
@@ -52,6 +52,7 @@ namespace Postech.PhaseOne.GroupEight.TechChallenge.UnitTests.Suite.Domain.Handl
             contactToUpdate.ContactPhone.Number.Should().Be(input.Phone); 
             contactToUpdate.ContactPhone.AreaCode.Value.Should().Be(input.AreaCode); 
             contactToUpdate.ModifiedAt.Should().BeOnOrBefore(DateTime.UtcNow);
+            contactToUpdate.Active.Should().Be(input.IsActive);
             contactRepository.Verify(c => c.GetByIdAsync(contactIdToUpdate), Times.Once());
             contactRepository.Verify(c => c.SaveChangesAsync(), Times.Once());
         }

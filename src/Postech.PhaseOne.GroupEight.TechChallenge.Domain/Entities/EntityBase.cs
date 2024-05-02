@@ -23,10 +23,10 @@ namespace Postech.PhaseOne.GroupEight.TechChallenge.Domain.Entities
         {
             return Active;
         }
-
-        public void Inactivate()
+        
+        public void UpdateActiveStatus(bool isActive)
         {
-            Active = false;
+            Active = isActive;
             ModifiedAt = DateTime.UtcNow;
         }
     }

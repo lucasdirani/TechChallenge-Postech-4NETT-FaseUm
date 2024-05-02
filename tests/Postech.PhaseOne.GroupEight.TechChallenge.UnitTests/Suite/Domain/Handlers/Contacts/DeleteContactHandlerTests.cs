@@ -68,7 +68,7 @@ namespace Postech.PhaseOne.GroupEight.TechChallenge.UnitTests.Suite.Domain.Handl
             ContactEmailValueObject contactEmailToBeDeleted = new(_faker.Internet.Email());
             ContactPhoneValueObject contactPhoneToBeDeleted = new(_faker.Phone.PhoneNumber("9########"), AreaCodeValueObject.Create("21"));
             ContactEntity contactToBeDeleted = new(contactNameToBeDeleted, contactEmailToBeDeleted, contactPhoneToBeDeleted);
-            contactToBeDeleted.Inactivate();
+            contactToBeDeleted.UpdateActiveStatus(false);
             Mock<IContactRepository> contactRepository = new();
             contactRepository.Setup(c => c.GetByIdAsync(contactIdThatWillBeDeleted)).ReturnsAsync(contactToBeDeleted);
             DeleteContactHandler handler = new(contactRepository.Object);

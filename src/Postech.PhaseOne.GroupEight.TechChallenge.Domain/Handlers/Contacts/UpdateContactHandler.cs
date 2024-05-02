@@ -27,11 +27,11 @@ namespace Postech.PhaseOne.GroupEight.TechChallenge.Domain.Handlers.Contacts
         {
             var contact = await _contactRepository.GetByIdAsync(request.ContactId);
             NotFoundException.ThrowWhenNullEntity(contact, "Contact could not be found");
-            EntityInactiveException.ThrowWhenIsInactive(contact, "The contact has already been deleted");
 
             var contactName = new ContactNameValueObject(request.Name, request.LastName);
             var contactEmail = new ContactEmailValueObject(request.Email);
             var contactPhone = new ContactPhoneValueObject(request.Phone, AreaCodeValueObject.Create(request.AreaCode));
+            contact.UpdateActiveStatus(request.IsActive);
             contact.Update(contactName, contactEmail, contactPhone);     
 
             await _contactRepository.SaveChangesAsync();
