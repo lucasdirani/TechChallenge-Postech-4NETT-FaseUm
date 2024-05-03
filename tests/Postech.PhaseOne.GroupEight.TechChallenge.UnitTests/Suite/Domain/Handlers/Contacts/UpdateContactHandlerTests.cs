@@ -5,6 +5,7 @@ using Postech.PhaseOne.GroupEight.TechChallenge.Domain.Commands.Inputs;
 using Postech.PhaseOne.GroupEight.TechChallenge.Domain.Commands.Outputs;
 using Postech.PhaseOne.GroupEight.TechChallenge.Domain.Entities;
 using Postech.PhaseOne.GroupEight.TechChallenge.Domain.Exceptions.Common;
+using Postech.PhaseOne.GroupEight.TechChallenge.Domain.Factories.Interfaces;
 using Postech.PhaseOne.GroupEight.TechChallenge.Domain.Handlers.Contacts;
 using Postech.PhaseOne.GroupEight.TechChallenge.Domain.Interfaces.Repositories;
 using Postech.PhaseOne.GroupEight.TechChallenge.Domain.ValueObjects;
@@ -15,32 +16,37 @@ namespace Postech.PhaseOne.GroupEight.TechChallenge.UnitTests.Suite.Domain.Handl
     {
         private readonly Faker _faker = new("pt_BR");
 
-        [Theory(DisplayName = "Updating a registered contact")]
-        [InlineData("29bdd56a-4fdc-4215-aecd-f00df20d4ea7")]
-        [InlineData("53f59d8d-647e-4859-bca4-6569f3cc6f0a")]
-        [InlineData("0fe764f7-9135-4fdb-a950-b821dd45db75")]
+        [Fact(DisplayName = "Updating a registered contact")]
         [Trait("Action", "Handle")]
-        public async Task Handle_UpdatingRegisteredContact_ShouldUpdateContact(Guid contactIdToUpdate)
+        public async Task Handle_UpdatingRegisteredContact_ShouldUpdateContact()
         {
+            var contactIdToUpdate = _faker.Random.Guid();
+
             ContactNameValueObject contactNameToUpdate = new(_faker.Name.FirstName(), _faker.Name.LastName());
             ContactEmailValueObject contactEmailToUpdate = new(_faker.Internet.Email());
             ContactPhoneValueObject contactPhoneToUpdate = new(_faker.Phone.PhoneNumber("9########"), AreaCodeValueObject.Create("11"));
             ContactEntity contactToUpdate = new(contactNameToUpdate, contactEmailToUpdate, contactPhoneToUpdate);
 
-            Mock<IContactRepository> contactRepository = new();
-            contactRepository.Setup(c => c.GetByIdAsync(contactIdToUpdate)).ReturnsAsync(contactToUpdate);
-            contactRepository.Setup(c => c.SaveChangesAsync());
-
-            UpdateContactHandler handler = new(contactRepository.Object);         
+            ContactPhoneValueObject newContact = new(_faker.Phone.PhoneNumber("9########"), AreaCodeValueObject.Create("11"));
             UpdateContactInput input = new()
             {
                 ContactId = contactIdToUpdate,
                 Name = _faker.Name.FirstName(),
                 LastName = _faker.Name.LastName(),
                 Email = _faker.Internet.Email(),
-                Phone = _faker.Phone.PhoneNumber("9########"),
-                AreaCode = "11"
+                Phone = newContact.Number,
+                AreaCode = newContact.AreaCode.Value,
+                IsActive = true
             };
+           
+
+            Mock<IContactRepository> contactRepository = new();
+            Mock<IContactPhoneValueObjectFactory> ContactPhoneValueObjectFactory = new();
+            ContactPhoneValueObjectFactory.Setup(c => c.CreateAsync(newContact.Number, newContact.AreaCode.Value)).ReturnsAsync(newContact);
+            contactRepository.Setup(c => c.GetByIdAsync(contactIdToUpdate)).ReturnsAsync(contactToUpdate);
+            contactRepository.Setup(c => c.SaveChangesAsync());
+
+            UpdateContactHandler handler = new(contactRepository.Object, ContactPhoneValueObjectFactory.Object);         
             DefaultOutput output = await handler.Handle(input, CancellationToken.None);
 
             output.Success.Should().Be(true);
@@ -57,16 +63,15 @@ namespace Postech.PhaseOne.GroupEight.TechChallenge.UnitTests.Suite.Domain.Handl
             contactRepository.Verify(c => c.SaveChangesAsync(), Times.Once());
         }
 
-        [Theory(DisplayName = "Updating an unregistered contact")]
-        [InlineData("1a7cecc2-b866-4cad-947d-14405be78616")]
-        [InlineData("ecd81ba1-c2ea-4575-aa02-e9c42c9858cc")]
-        [InlineData("6f4b7f4c-e1e3-4d60-81c2-c9279ce81f85")]
+        [Fact(DisplayName = "Updating an unregistered contact")]
         [Trait("Action", "Handle")]
-        public async Task Handle_UpdatingUnregisteredContact_ShouldThrowNotFoundException(Guid contactIdToUpdate)
+        public async Task Handle_UpdatingUnregisteredContact_ShouldThrowNotFoundException()
         {
+            var contactIdToUpdate = _faker.Random.Guid();
             Mock<IContactRepository> contactRepository = new();
+            Mock<IContactPhoneValueObjectFactory> ContactPhoneValueObjectFactory = new();
             contactRepository.Setup(c => c.GetByIdAsync(contactIdToUpdate)).ReturnsAsync(() => null);
-            UpdateContactHandler handler = new(contactRepository.Object);
+            UpdateContactHandler handler = new(contactRepository.Object, ContactPhoneValueObjectFactory.Object);
             UpdateContactInput input = new()
             {
                 ContactId = contactIdToUpdate,
