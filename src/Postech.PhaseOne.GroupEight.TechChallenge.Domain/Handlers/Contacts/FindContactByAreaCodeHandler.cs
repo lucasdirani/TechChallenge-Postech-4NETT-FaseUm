@@ -20,7 +20,7 @@ namespace Postech.PhaseOne.GroupEight.TechChallenge.Domain.Handlers.Contacts
         public async Task<ContactListOutput> Handle(FindContactInput request, CancellationToken cancellationToken)
         {
             Expression<Func<ContactEntity, bool>> expression = contact =>
-                   contact.ContactPhone.AreaCode.Value == request.AreaCodeValue;
+                   contact.ContactPhone.AreaCode.Value == request.AreaCodeValue && contact.Active;
 
             List<ContactEntity> contactsList = await _contactRepository.FindAsync(expression);
 
