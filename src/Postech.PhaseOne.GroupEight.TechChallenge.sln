@@ -17,6 +17,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{0460E90A
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Postech.PhaseOne.GroupEight.TechChallenge.IntegrationTests", "..\tests\Postech.PhaseOne.GroupEight.TechChallenge.IntegrationTests\Postech.PhaseOne.GroupEight.TechChallenge.IntegrationTests.csproj", "{2816D45C-C022-4698-978C-7564B5AD76DC}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Postech.PhaseOne.GroupEight.TechChallenge.FunctionalTests", "..\tests\Postech.PhaseOne.GroupEight.TechChallenge.FunctionalTests\Postech.PhaseOne.GroupEight.TechChallenge.FunctionalTests.csproj", "{38248AB1-EF73-4474-9088-5B528774B50C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -43,6 +45,10 @@ Global
 		{2816D45C-C022-4698-978C-7564B5AD76DC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2816D45C-C022-4698-978C-7564B5AD76DC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2816D45C-C022-4698-978C-7564B5AD76DC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{38248AB1-EF73-4474-9088-5B528774B50C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{38248AB1-EF73-4474-9088-5B528774B50C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{38248AB1-EF73-4474-9088-5B528774B50C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{38248AB1-EF73-4474-9088-5B528774B50C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -53,6 +59,7 @@ Global
 		{9599248D-C160-43FB-899D-830C8F93D784} = {65C5BB24-F08B-46F7-B1B4-D234E73E4B4D}
 		{1B2F098F-F64B-4550-9A0D-1D8F7A3414E6} = {0460E90A-D7A1-49D6-A5AF-22653D0946D7}
 		{2816D45C-C022-4698-978C-7564B5AD76DC} = {0460E90A-D7A1-49D6-A5AF-22653D0946D7}
+		{38248AB1-EF73-4474-9088-5B528774B50C} = {0460E90A-D7A1-49D6-A5AF-22653D0946D7}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {41228859-9300-458B-B4FD-D688797D0BB8}
