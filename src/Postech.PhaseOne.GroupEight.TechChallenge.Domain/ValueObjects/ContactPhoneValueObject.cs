@@ -24,5 +24,16 @@ namespace Postech.PhaseOne.GroupEight.TechChallenge.Domain.ValueObjects
 
         [GeneratedRegex("^[2-9][0-9]{3,4}[0-9]{4}$", RegexOptions.Compiled)]
         private static partial Regex PhoneNumberRegex();
+
+        /// <summary>
+        /// Indicates whether the phone number or area code has different values.
+        /// </summary>
+        /// <param name="otherNumber">The new number that will be used as a comparison for the current number.</param>
+        /// <param name="otherAreaCode">The new area code that will be used as a comparison for the current area code.</param>
+        /// <returns>Returns true if the number or area code has been changed. Otherwise, it returns false.</returns>
+        public bool HasBeenChanged(string otherNumber, AreaCodeValueObject otherAreaCode)
+        {
+            return Number != otherNumber && AreaCode != otherAreaCode;
+        }
     }
 }

@@ -4,15 +4,40 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace Postech.PhaseOne.GroupEight.TechChallenge.Domain.Commands.Inputs
 {
+    /// <summary>
+    /// Object that stores the update data for a contact.
+    /// </summary>
     [ExcludeFromCodeCoverage]
-    public class UpdateContactInput : IRequest<DefaultOutput>
+    public record UpdateContactInput : IRequest<DefaultOutput>
     {
-        public Guid ContactId { get; set; }
-        public string Name { get; set; }
-        public string LastName { get; set; }
-        public string Email { get; set; }
-        public string Phone { get; set; }
-        public string AreaCode { get; set; }
-        public bool IsActive { get; set; }
+        /// <summary>
+        /// The unique identifier of the contact that will be updated.
+        /// </summary>
+        public Guid ContactId { get; init; }
+
+        /// <summary>
+        /// The new first name of the contact.
+        /// </summary>
+        public string ContactFirstName { get; init; }
+
+        /// <summary>
+        /// The new last name of the contact.
+        /// </summary>
+        public string ContactLastName { get; init; }
+
+        /// <summary>
+        /// The new email address of the contact.
+        /// </summary>
+        public string ContactEmail { get; init; }
+
+        /// <summary>
+        /// The new phone number of the contact.
+        /// </summary>
+        public string ContactPhoneNumber { get; init; }
+
+        /// <summary>
+        /// The new area code phone number of the contact.
+        /// </summary>
+        public string ContactPhoneNumberAreaCode { get; init; }
     }
 }

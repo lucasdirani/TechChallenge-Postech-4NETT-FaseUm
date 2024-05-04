@@ -2,7 +2,6 @@
 
 namespace Postech.PhaseOne.GroupEight.TechChallenge.Domain.Entities
 {
-
     public class ContactEntity(
         ContactNameValueObject contactName,
         ContactEmailValueObject contactEmail,
@@ -16,16 +15,40 @@ namespace Postech.PhaseOne.GroupEight.TechChallenge.Domain.Entities
         public ContactPhoneValueObject ContactPhone { get; private set; } = contactPhone;
 
         /// <summary>
-        /// Updates the contact information.
+        /// Updates the contact's name if their first name or last name has changed.
         /// </summary>
-        /// <param name="contactName">The new contact name.</param>
-        /// <param name="contactEmail">The new contact email.</param>
-        /// <param name="contactPhone">The new contact phone.</param>
-        public void Update(ContactNameValueObject contactName, ContactEmailValueObject contactEmail, ContactPhoneValueObject contactPhone)
+        /// <param name="contactFirstName">The contact's new first name.</param>
+        /// <param name="contactLastName">The contact's new last name.</param>
+        public void UpdateContactName(string contactFirstName, string contactLastName)
         {
-            ContactName = contactName;
-            ContactEmail = contactEmail;
-            ContactPhone = contactPhone;
+            if (ContactName.HasBeenChanged(contactFirstName, contactLastName))
+            {
+                ContactName = new ContactNameValueObject(contactFirstName, contactLastName);
+            }
+        }
+
+        /// <summary>
+        /// Updates the contact's email if their value has changed.
+        /// </summary>
+        /// <param name="contactEmail">The contact's new email.</param>
+        public void UpdateContactEmail(string contactEmail)
+        {
+            if (ContactEmail.HasBeenChanged(contactEmail))
+            {
+                ContactEmail = new ContactEmailValueObject(contactEmail);
+            }
+        }
+
+        /// <summary>
+        /// Updates the contact's phone if their value has changed.
+        /// </summary>
+        /// <param name="contactPhone">The contact's new phone.</param>
+        public void UpdateContactPhone(ContactPhoneValueObject contactPhone)
+        {
+            if (ContactPhone.HasBeenChanged(contactPhone.Number, contactPhone.AreaCode))
+            {
+                ContactPhone = contactPhone;
+            }
         }
     }
 }

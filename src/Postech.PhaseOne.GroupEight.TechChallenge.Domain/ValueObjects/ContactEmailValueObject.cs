@@ -15,5 +15,15 @@ namespace Postech.PhaseOne.GroupEight.TechChallenge.Domain.ValueObjects
 
         [GeneratedRegex("^[\\w-]+(?:\\.[\\w-]+)*@(?:[\\w-]+\\.)+[a-zA-Z]{2,7}$", RegexOptions.Compiled)]
         private static partial Regex EmailValueRegex();
+
+        /// <summary>
+        /// Indicates whether the email address has a different value.
+        /// </summary>
+        /// <param name="otherEmailAddress">The new email address that will be used as a comparison for the current email address.</param>
+        /// <returns>Returns true if the email address has been changed. Otherwise, it returns false.</returns>
+        public bool HasBeenChanged(string otherEmailAddress)
+        {
+            return Value != otherEmailAddress;
+        }
     }
 }
