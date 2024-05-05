@@ -15,8 +15,7 @@ public class DeleteContactHandler(IContactRepository contactRepository) : IReque
     {
         ContactEntity? contactToBeDeleted = await _contactRepository.GetByIdAsync(request.ContactId);
         NotFoundException.ThrowWhenNullEntity(contactToBeDeleted, "Contact could not be found");
-        EntityInactiveException.ThrowWhenIsInactive(contactToBeDeleted, "The contact has already been deleted");
-        contactToBeDeleted.UpdateActiveStatus(false);
+        contactToBeDeleted.Inactivate();
         await _contactRepository.SaveChangesAsync();
         return new DefaultOutput(true, "The contact was successfully deleted");
     }

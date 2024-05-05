@@ -33,7 +33,7 @@ namespace Postech.PhaseOne.GroupEight.TechChallenge.Domain.ValueObjects
         /// <returns>Returns true if the number or area code has been changed. Otherwise, it returns false.</returns>
         public bool HasBeenChanged(string otherNumber, AreaCodeValueObject otherAreaCode)
         {
-            return Number != otherNumber && AreaCode != otherAreaCode;
+            return Number != otherNumber || AreaCode != otherAreaCode;
         }
     }
 }
