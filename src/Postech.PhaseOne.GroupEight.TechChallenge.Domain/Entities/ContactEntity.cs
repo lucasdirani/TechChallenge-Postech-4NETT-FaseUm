@@ -2,17 +2,26 @@
 
 namespace Postech.PhaseOne.GroupEight.TechChallenge.Domain.Entities
 {
-    public class ContactEntity(
-        ContactNameValueObject contactName,
-        ContactEmailValueObject contactEmail,
-        ContactPhoneValueObject contactPhone)
-        : EntityBase()
+    public class ContactEntity : EntityBase
     {
-        public ContactNameValueObject ContactName { get; private set; } = contactName;
+        public ContactEntity(
+            ContactNameValueObject contactName,
+            ContactEmailValueObject contactEmail,
+            ContactPhoneValueObject contactPhone)
+            : base()
+        {
+            ContactName = contactName;
+            ContactEmail = contactEmail;
+            ContactPhone = contactPhone;
+        }
 
-        public ContactEmailValueObject ContactEmail { get; private set; } = contactEmail;
+        private ContactEntity() { }
 
-        public ContactPhoneValueObject ContactPhone { get; private set; } = contactPhone;
+        public ContactNameValueObject ContactName { get; private set; }
+
+        public ContactEmailValueObject ContactEmail { get; private set; } 
+
+        public ContactPhoneValueObject ContactPhone { get; private set; }
 
         /// <summary>
         /// Updates the contact's name if their first name or last name has changed.
