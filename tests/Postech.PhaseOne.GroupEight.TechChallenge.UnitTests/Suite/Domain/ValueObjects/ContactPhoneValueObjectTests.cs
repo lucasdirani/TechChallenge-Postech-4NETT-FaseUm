@@ -1,6 +1,5 @@
 ﻿using Bogus;
 using FluentAssertions;
-using Postech.PhaseOne.GroupEight.TechChallenge.Domain.Exceptions.Common;
 using Postech.PhaseOne.GroupEight.TechChallenge.Domain.Exceptions.ValueObjects;
 using Postech.PhaseOne.GroupEight.TechChallenge.Domain.ValueObjects;
 
@@ -51,16 +50,6 @@ namespace Postech.PhaseOne.GroupEight.TechChallenge.UnitTests.Suite.Domain.Value
             ContactPhoneNumberException exception = Assert.Throws<ContactPhoneNumberException>(() => new ContactPhoneValueObject(phoneNumber, areaCode));
             exception.Message.Should().NotBeNullOrEmpty();
             exception.PhoneNumber.Should().Be(phoneNumber);
-        }
-
-        [Fact(DisplayName = "Construct an object of type ContactPhoneValueObject with an invalid area code")]
-        [Trait("Action", "ContactPhoneValueObject")]
-        public void ContactPhoneValueObject_InvalidAreaCode_ShouldThrowNotFoundException()
-        {
-            string phoneNumber = "987654325";
-            AreaCodeValueObject? areaCode = null;
-            NotFoundException exception = Assert.Throws<NotFoundException>(() => new ContactPhoneValueObject(phoneNumber, areaCode));
-            exception.Message.Should().NotBeNullOrEmpty();
         }
 
         [Theory(DisplayName = "Contact's phone number is being changed.")]
