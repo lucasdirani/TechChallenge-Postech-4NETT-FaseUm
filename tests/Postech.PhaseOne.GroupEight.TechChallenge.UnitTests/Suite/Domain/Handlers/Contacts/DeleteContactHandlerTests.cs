@@ -22,6 +22,7 @@ namespace Postech.PhaseOne.GroupEight.TechChallenge.UnitTests.Suite.Domain.Handl
         [Trait("Action", "Handle")]
         public async Task Handle_DeletingRegisteredContact_ShouldDeleteContact(Guid contactIdThatWillBeDeleted)
         {
+            // Arrange
             ContactNameValueObject contactNameToBeDeleted = new(_faker.Name.FirstName(), _faker.Name.LastName());
             ContactEmailValueObject contactEmailToBeDeleted = new(_faker.Internet.Email());
             ContactPhoneValueObject contactPhoneToBeDeleted = new(_faker.Phone.PhoneNumber("9########"), AreaCodeValueObject.Create("11"));
@@ -31,7 +32,11 @@ namespace Postech.PhaseOne.GroupEight.TechChallenge.UnitTests.Suite.Domain.Handl
             contactRepository.Setup(c => c.SaveChangesAsync());
             DeleteContactHandler handler = new(contactRepository.Object);
             DeleteContactInput input = new() { ContactId = contactIdThatWillBeDeleted };
+
+            // Act
             DefaultOutput output = await handler.Handle(input, CancellationToken.None);
+
+            // Assert
             output.Success.Should().Be(true);
             output.Message.Should().NotBeNullOrEmpty();
             contactToBeDeleted.IsActive().Should().BeFalse();
@@ -47,10 +52,13 @@ namespace Postech.PhaseOne.GroupEight.TechChallenge.UnitTests.Suite.Domain.Handl
         [Trait("Action", "Handle")]
         public async Task Handle_DeletingUnegisteredContact_ShouldThrowNotFoundException(Guid contactIdThatWillBeDeleted)
         {
+            // Arrange
             Mock<IContactRepository> contactRepository = new();
             contactRepository.Setup(c => c.GetByIdAsync(contactIdThatWillBeDeleted)).ReturnsAsync(() => null);
             DeleteContactHandler handler = new(contactRepository.Object);
             DeleteContactInput input = new() { ContactId = contactIdThatWillBeDeleted };
+
+            // Assert
             NotFoundException exception = await Assert.ThrowsAsync<NotFoundException>(() => handler.Handle(input, CancellationToken.None));
             exception.Message.Should().NotBeNullOrEmpty();
             contactRepository.Verify(c => c.GetByIdAsync(contactIdThatWillBeDeleted), Times.Once());
@@ -64,6 +72,7 @@ namespace Postech.PhaseOne.GroupEight.TechChallenge.UnitTests.Suite.Domain.Handl
         [Trait("Action", "Handle")]
         public async Task Handle_DeletingContactThatHasPreviouslyBeenDeleted_ShouldThrowEntityInactiveException(Guid contactIdThatWillBeDeleted)
         {
+            // Arrange
             ContactNameValueObject contactNameToBeDeleted = new(_faker.Name.FirstName(), _faker.Name.LastName());
             ContactEmailValueObject contactEmailToBeDeleted = new(_faker.Internet.Email());
             ContactPhoneValueObject contactPhoneToBeDeleted = new(_faker.Phone.PhoneNumber("9########"), AreaCodeValueObject.Create("21"));
@@ -73,6 +82,8 @@ namespace Postech.PhaseOne.GroupEight.TechChallenge.UnitTests.Suite.Domain.Handl
             contactRepository.Setup(c => c.GetByIdAsync(contactIdThatWillBeDeleted)).ReturnsAsync(contactToBeDeleted);
             DeleteContactHandler handler = new(contactRepository.Object);
             DeleteContactInput input = new() { ContactId = contactIdThatWillBeDeleted };
+
+            // Assert
             EntityInactiveException exception = await Assert.ThrowsAsync<EntityInactiveException>(() => handler.Handle(input, CancellationToken.None));
             exception.Message.Should().NotBeNullOrEmpty();
             contactRepository.Verify(c => c.GetByIdAsync(contactIdThatWillBeDeleted), Times.Once());
