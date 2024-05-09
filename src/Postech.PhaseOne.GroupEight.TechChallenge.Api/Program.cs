@@ -62,3 +62,8 @@ app.MapPost("/contacts", async (IMediator mediator, [FromBody] ContactInput requ
 .WithOpenApi();
 
 app.Run();
+
+public partial class Program
+{
+    protected Program() { }
+}
