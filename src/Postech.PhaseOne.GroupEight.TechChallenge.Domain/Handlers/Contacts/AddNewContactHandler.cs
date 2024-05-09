@@ -14,13 +14,31 @@ namespace Postech.PhaseOne.GroupEight.TechChallenge.Domain.Handlers.Contacts
 
         public async Task<DefaultOutput> Handle(ContactInput request, CancellationToken cancellationToken)
         {
+
+            
+
             ContactNameValueObject contactName = new(request.Name, request.LastName);
+
+            
             ContactEmailValueObject contactEmail = new(request.Email);
-            ContactPhoneValueObject contactPhone = new(request.Phone, AreaCodeValueObject.Create(request.AreaCode));
+
+            AreaCodeValueObject areaCodeValueObject = await _contactRepository.GetAreaCodeByValueAsync(request.AreaCode);
+            if (areaCodeValueObject == null)
+                areaCodeValueObject = AreaCodeValueObject.Create(request.AreaCode);
+
+            ContactPhoneValueObject contactPhone = new(request.Phone, areaCodeValueObject);
+
+            var existstContactPhone = await _contactRepository.
+                            GetContactPhoneByNumberAndAreaCodeValueAsync(request.Phone, request.AreaCode);
+
+            DomainException.ThrowWhen(existstContactPhone != null, "Esse telefone já foi cadastrado na lista de contatos.");
+
+
             ContactEntity entity = new(contactName, contactEmail, contactPhone);
-            DomainException.ThrowWhen(request.Name == "", "Nome é obrigatório");
+                        
             await _contactRepository.InsertAsync(entity);
-            return new DefaultOutput(true, "Contato inserido com sucesso");
+            await _contactRepository.SaveChangesAsync();
+            return new DefaultOutput(true, "Contato inserido com sucesso", new { entity });
         }
     }
 }
