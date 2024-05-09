@@ -9,7 +9,7 @@ using System.Linq.Expressions;
 
 namespace Postech.PhaseOne.GroupEight.TechChallenge.Domain.Handlers.Contacts
 {
-    public class FindContactByAreaCodeHandler : IRequestHandler<FindContactInput, ContactListOutput>
+    public class FindContactByAreaCodeHandler : IRequestHandler<FindContactInput, DefaultOutput>
     {
         private readonly IContactRepository _contactRepository;
 
@@ -17,14 +17,14 @@ namespace Postech.PhaseOne.GroupEight.TechChallenge.Domain.Handlers.Contacts
         {
             _contactRepository = contactRepository;
         }
-        public async Task<ContactListOutput> Handle(FindContactInput request, CancellationToken cancellationToken)
+        public async Task<DefaultOutput> Handle(FindContactInput request, CancellationToken cancellationToken)
         {
             Expression<Func<ContactEntity, bool>> expression = contact =>
                    contact.ContactPhone.AreaCode.Value == request.AreaCodeValue && contact.Active;
 
             List<ContactEntity> contactsList = await _contactRepository.FindAsync(expression);
 
-            return new ContactListOutput(true, contactsList);
+            return new DefaultOutput(true, contactsList);
         }
     }
 }

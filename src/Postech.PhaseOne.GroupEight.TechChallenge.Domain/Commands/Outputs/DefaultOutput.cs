@@ -12,6 +12,12 @@ namespace Postech.PhaseOne.GroupEight.TechChallenge.Domain.Commands.Outputs
             Data = data;
         }
 
+        public DefaultOutput(bool success, object data)
+        {
+            Success = success;
+            Data = data;
+        }
+
         public DefaultOutput(bool success, string message)
         {
             Success = success;
