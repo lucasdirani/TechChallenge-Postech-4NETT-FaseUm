@@ -7,7 +7,7 @@ using Postech.PhaseOne.GroupEight.TechChallenge.Domain.Factories;
 using Postech.PhaseOne.GroupEight.TechChallenge.Domain.Factories.Interfaces;
 using Postech.PhaseOne.GroupEight.TechChallenge.Domain.Interfaces.Repositories;
 using Postech.PhaseOne.GroupEight.TechChallenge.Domain.ValueObjects;
-using Postech.PhaseOne.GroupEight.TechChallenge.Domain.Extensions;
+
 namespace Postech.PhaseOne.GroupEight.TechChallenge.Domain.Handlers.Contacts
 {
     /// <summary>
