@@ -28,9 +28,7 @@ namespace Postech.PhaseOne.GroupEight.TechChallenge.Domain.Handlers.Contacts
         /// <returns></returns>
         public async Task<DefaultOutput> Handle(ContactInput request, CancellationToken cancellationToken)
         {
-
-            DomainException.ThrowWhenThrereAreErrorMessages(request.Validadate());
-
+            
             ContactNameValueObject contactName = new(request.Name, request.LastName);
             ContactEmailValueObject contactEmail = new(request.Email);
 

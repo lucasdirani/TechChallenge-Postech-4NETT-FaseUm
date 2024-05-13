@@ -5,7 +5,7 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace Postech.PhaseOne.GroupEight.TechChallenge.Domain.Commands.Inputs
 {
-//    [ExcludeFromCodeCoverage]
+    [ExcludeFromCodeCoverage]
     public class ContactInput : IRequest<DefaultOutput>
     {
 

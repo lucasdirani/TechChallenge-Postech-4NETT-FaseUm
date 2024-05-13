@@ -74,6 +74,7 @@ app.UseExceptionHandler(configure =>
 app.MapPost("/contacts",
     async (IMediator mediator, [FromBody] ContactInput request) =>
 {
+    DomainException.ThrowWhenThrereAreErrorMessages(request.Validadate());
     return await mediator.Send(request);
 })
 .WithName("Register Contact")
