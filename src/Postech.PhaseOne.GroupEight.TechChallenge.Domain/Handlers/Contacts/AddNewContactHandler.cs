@@ -10,11 +10,22 @@ using Postech.PhaseOne.GroupEight.TechChallenge.Domain.ValueObjects;
 using Postech.PhaseOne.GroupEight.TechChallenge.Domain.Extensions;
 namespace Postech.PhaseOne.GroupEight.TechChallenge.Domain.Handlers.Contacts
 {
+    /// <summary>
+    /// Inclui um novo contato na agenda
+    /// </summary>
+    /// <param name="contactRepository">Repositorio do Contato</param>
+    /// <param name="contactPhoneValueObjectFactory">Fabrica do telefone</param>
     public class AddNewContactHandler(IContactRepository contactRepository, IContactPhoneValueObjectFactory contactPhoneValueObjectFactory) : IRequestHandler<ContactInput, DefaultOutput>
     {
         private readonly IContactRepository _contactRepository = contactRepository;
         private readonly IContactPhoneValueObjectFactory _contactPhoneValueObjectFactory = contactPhoneValueObjectFactory;
-        
+
+        /// <summary>
+        /// Executa as regras de cada campo e incluí o contato na agenda do usuário.
+        /// </summary>
+        /// <param name="request">Payload com os dados de contato</param>
+        /// <param name="cancellationToken">CancellationToken</param>
+        /// <returns></returns>
         public async Task<DefaultOutput> Handle(ContactInput request, CancellationToken cancellationToken)
         {
 
