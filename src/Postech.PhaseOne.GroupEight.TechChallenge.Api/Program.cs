@@ -1,15 +1,14 @@
 using MediatR;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.OpenApi.Models;
 using Postech.PhaseOne.GroupEight.TechChallenge.Api.Setup;
 using Postech.PhaseOne.GroupEight.TechChallenge.Domain.Commands.Inputs;
 using Postech.PhaseOne.GroupEight.TechChallenge.Domain.Commands.Outputs;
 using Postech.PhaseOne.GroupEight.TechChallenge.Domain.Exceptions.Common;
-using System.Net;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.OpenApi.Models;
-using System.Reflection;
+using Postech.PhaseOne.GroupEight.TechChallenge.Domain.Extensions;
 using Swashbuckle.AspNetCore.Annotations;
+using System.Net;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 IConfigurationRoot configuration = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build();
