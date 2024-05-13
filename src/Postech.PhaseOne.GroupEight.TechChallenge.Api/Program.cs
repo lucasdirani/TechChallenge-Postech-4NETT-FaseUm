@@ -87,3 +87,8 @@ app.MapPost("/contacts",
 .WithOpenApi();
 
 app.Run();
+
+public partial class Program
+{
+    protected Program() { }
+}
