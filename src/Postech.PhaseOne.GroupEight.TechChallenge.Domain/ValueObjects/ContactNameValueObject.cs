@@ -1,4 +1,5 @@
 ﻿using Postech.PhaseOne.GroupEight.TechChallenge.Domain.Exceptions.ValueObjects;
+using System.ComponentModel.DataAnnotations;
 using System.Text.RegularExpressions;
 
 namespace Postech.PhaseOne.GroupEight.TechChallenge.Domain.ValueObjects
@@ -12,7 +13,7 @@ namespace Postech.PhaseOne.GroupEight.TechChallenge.Domain.ValueObjects
             FirstName = firstName;
             LastName = lastName;
         }
-
+        
         public string FirstName { get; init; }
         public string LastName { get; init; }
 

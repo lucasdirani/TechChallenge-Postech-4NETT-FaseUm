@@ -7,7 +7,7 @@ using Postech.PhaseOne.GroupEight.TechChallenge.Domain.Factories;
 using Postech.PhaseOne.GroupEight.TechChallenge.Domain.Factories.Interfaces;
 using Postech.PhaseOne.GroupEight.TechChallenge.Domain.Interfaces.Repositories;
 using Postech.PhaseOne.GroupEight.TechChallenge.Domain.ValueObjects;
-
+using Postech.PhaseOne.GroupEight.TechChallenge.Domain.Extensions;
 namespace Postech.PhaseOne.GroupEight.TechChallenge.Domain.Handlers.Contacts
 {
     public class AddNewContactHandler(IContactRepository contactRepository, IContactPhoneValueObjectFactory contactPhoneValueObjectFactory) : IRequestHandler<ContactInput, DefaultOutput>
@@ -18,6 +18,7 @@ namespace Postech.PhaseOne.GroupEight.TechChallenge.Domain.Handlers.Contacts
         public async Task<DefaultOutput> Handle(ContactInput request, CancellationToken cancellationToken)
         {
 
+            DomainException.ThrowWhenThrereAreErrorMessages(request.Validadate());
 
             ContactNameValueObject contactName = new(request.Name, request.LastName);
             ContactEmailValueObject contactEmail = new(request.Email);

@@ -6,6 +6,7 @@ using Postech.PhaseOne.GroupEight.TechChallenge.Domain.Commands.Inputs;
 using Postech.PhaseOne.GroupEight.TechChallenge.Domain.Commands.Outputs;
 using Postech.PhaseOne.GroupEight.TechChallenge.Domain.Exceptions.Common;
 using System.Net;
+using Microsoft.AspNetCore.Mvc;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 IConfigurationRoot configuration = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build();
@@ -55,8 +56,8 @@ app.UseExceptionHandler(configure =>
 });
 
 app.MapPost("/contacts", async (IMediator mediator, [FromBody] ContactInput request) =>
-{
-    return await mediator.Send(request);
+{    
+        return await mediator.Send(request);
 })
 .WithName("Register Contact")
 .WithOpenApi();
