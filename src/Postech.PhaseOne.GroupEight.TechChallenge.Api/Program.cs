@@ -6,6 +6,7 @@ using Postech.PhaseOne.GroupEight.TechChallenge.Api.Setup;
 using Postech.PhaseOne.GroupEight.TechChallenge.Domain.Commands.Inputs;
 using Postech.PhaseOne.GroupEight.TechChallenge.Domain.Commands.Outputs;
 using Postech.PhaseOne.GroupEight.TechChallenge.Domain.Exceptions.Common;
+using Postech.PhaseOne.GroupEight.TechChallenge.Domain.Extensions;
 using Swashbuckle.AspNetCore.Annotations;
 using System.Net;
 
@@ -16,13 +17,10 @@ builder.Services.AddEndpointsApiExplorer();
 
 builder.Services.AddSwaggerGen(c =>
 {
-    c.SwaggerDoc("v1", new OpenApiInfo
-    {
-        Title = "Tech Challenge 2024 Documentation",
-        Version = "v1",
-        Description = "Responsible students: Ricardo Fulgencio, Breno Gomes, Lucas Pinho, Lucas Ruiz, and Tatiana Lima"
+    c.SwaggerDoc("v1", new OpenApiInfo { Title = "Documentação do Tech challenge 2024", Version = "v1", 
+        Description = "Alunos responsáveis: Ricardo Fulgencio, Breno Gomes, Lucas Pinho, Lucas Ruiz e Tatiana Lima "
     });
-
+    
     c.EnableAnnotations();
 });
 
@@ -39,7 +37,7 @@ if (app.Environment.IsDevelopment())
     app.UseMiniProfiler();
     app.UseSwagger();
     app.MapSwagger();
-    app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Api v1"));
+    app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Api v1"));        
 }
 app.UseHttpsRedirection();
 app.UseExceptionHandler(configure =>
@@ -69,11 +67,21 @@ app.UseExceptionHandler(configure =>
     });
 });
 
-app.MapPost("/contacts", async (IMediator mediator, [FromBody] ContactInput request) =>
+
+app.MapPost("/contacts",
+    async (IMediator mediator, [FromBody] ContactInput request) =>
 {
+    DomainException.ThrowWhenThrereAreErrorMessages(request.Validadate());
     return await mediator.Send(request);
 })
 .WithName("Register Contact")
+.WithMetadata(new SwaggerOperationAttribute
+                        ("Incluir novo contato na Agenda",
+                        "Cadastra um contato na agenda conforme os dados informados"))
+.WithMetadata(new SwaggerParameterAttribute("Dados do novo contato"))
+.WithMetadata(new SwaggerResponseAttribute(200, "Contato cadastrado"))
+.WithMetadata(new SwaggerResponseAttribute(400, "Request inválido"))
+.WithMetadata(new SwaggerResponseAttribute(500, "Erro inesperado"))
 .WithOpenApi();
 
 app.MapPut("/contacts", async (IMediator mediator, [FromBody] UpdateContactInput request) =>
