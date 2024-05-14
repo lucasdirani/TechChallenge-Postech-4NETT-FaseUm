@@ -59,5 +59,15 @@ namespace Postech.PhaseOne.GroupEight.TechChallenge.Domain.Entities
                 ContactPhone = contactPhone;
             }
         }
+
+        /// <summary>
+        /// Updates the contact's active status.
+        /// </summary>
+        /// <param name="isActive">The contact's status</param>
+        public void UpdateContactActiveStatus(bool isActive)
+        {
+            if(IsActive() != isActive)          
+                UpdateActiveStatus(isActive);                  
+        }
     }
 }

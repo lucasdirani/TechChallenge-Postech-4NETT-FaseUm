@@ -39,5 +39,14 @@ namespace Postech.PhaseOne.GroupEight.TechChallenge.Domain.Entities
             Active = false;
             ModifiedAt = DateTime.UtcNow;
         }
+
+        /// <summary>
+        /// Update the active status of the entity
+        /// </summary>
+        /// <param name="isActive">The entity status</param>
+        public void UpdateActiveStatus(bool isActive)
+        {
+            Active = isActive;
+        }
     }
 }
