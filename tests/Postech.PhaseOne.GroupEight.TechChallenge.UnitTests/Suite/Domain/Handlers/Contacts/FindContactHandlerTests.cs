@@ -1,17 +1,14 @@
-﻿using AutoBogus;
-using Bogus;
+﻿using Bogus;
 using FluentAssertions;
 using Moq;
 using Postech.PhaseOne.GroupEight.TechChallenge.Domain.Commands.Inputs;
 using Postech.PhaseOne.GroupEight.TechChallenge.Domain.Commands.Outputs;
 using Postech.PhaseOne.GroupEight.TechChallenge.Domain.Entities;
-using Postech.PhaseOne.GroupEight.TechChallenge.Domain.Exceptions.Common;
 using Postech.PhaseOne.GroupEight.TechChallenge.Domain.Handlers.Contacts;
 using Postech.PhaseOne.GroupEight.TechChallenge.Domain.Interfaces.Repositories;
 using Postech.PhaseOne.GroupEight.TechChallenge.Domain.ValueObjects;
-using System.Collections.Generic;
+using Postech.PhaseOne.GroupEight.TechChallenge.Domain.ViewModels;
 using System.Linq.Expressions;
-using System.Security.Principal;
 
 namespace Postech.PhaseOne.GroupEight.TechChallenge.UnitTests.Suite.Domain.Handlers.Contacts
 {
@@ -52,7 +49,8 @@ namespace Postech.PhaseOne.GroupEight.TechChallenge.UnitTests.Suite.Domain.Handl
             };
 
             Expression<Func<ContactEntity, bool>> expression = contact =>
-                   contact.ContactPhone.AreaCode.Value == InputAreaCodeValue;
+                   contact.ContactPhone.AreaCode.Value == InputAreaCodeValue
+                   && contact.Active;
 
             Mock<IContactRepository> contactRepository = new();
             contactRepository.Setup(c => c.FindAsync(expression))
@@ -61,11 +59,11 @@ namespace Postech.PhaseOne.GroupEight.TechChallenge.UnitTests.Suite.Domain.Handl
             FindContactByAreaCodeHandler handler = new(contactRepository.Object);
             FindContactInput input = new() { AreaCodeValue = InputAreaCodeValue };
 
-            ContactListOutput output = await handler.Handle(input, CancellationToken.None);
+            DefaultOutput output = await handler.Handle(input, CancellationToken.None);
 
             output.Success.Should().Be(true);
-            output.List.Should().NotBeNull();
-            output.List.Should().HaveCount(2);
+            output.Data.Should().NotBeNull();
+            output.Data.As<IEnumerable<FindContactByAreaCodeViewModel>>().Should().HaveCount(2);
         }
 
         [Theory(DisplayName = "Fetching list of contacts by non-existent area code.")]
@@ -86,7 +84,8 @@ namespace Postech.PhaseOne.GroupEight.TechChallenge.UnitTests.Suite.Domain.Handl
             };
 
             Expression<Func<ContactEntity, bool>> expression = contact =>
-                   contact.ContactPhone.AreaCode.Value == InputAreaCodeValue;
+                   contact.ContactPhone.AreaCode.Value == InputAreaCodeValue
+                   && contact.Active;
 
             Mock<IContactRepository> contactRepository = new();
             contactRepository.Setup(c => c.FindAsync(expression))
@@ -95,11 +94,11 @@ namespace Postech.PhaseOne.GroupEight.TechChallenge.UnitTests.Suite.Domain.Handl
             FindContactByAreaCodeHandler handler = new(contactRepository.Object);
             FindContactInput input = new() { AreaCodeValue = InputAreaCodeValue };
 
-            ContactListOutput output = await handler.Handle(input, CancellationToken.None);
+            DefaultOutput output = await handler.Handle(input, CancellationToken.None);
 
             output.Success.Should().Be(true);
-            output.List.Should().NotBeNull();
-            output.List.Should().BeEmpty();
+            output.Data.Should().NotBeNull();
+            output.Data.As<IEnumerable<FindContactByAreaCodeViewModel>>().Should().BeEmpty();
         }
     }
 }
