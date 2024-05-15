@@ -59,4 +59,11 @@ app.MapPost("/contacts", async (IMediator mediator, [FromBody] ContactInput requ
 .WithName("Register Contact")
 .WithOpenApi();
 
+app.MapGet("/contacts", async (IMediator mediator, [FromBody] FindContactInput request) =>
+{
+    return await mediator.Send(request);
+})
+.WithName("Find Contacts")
+.WithOpenApi();
+
 app.Run();
