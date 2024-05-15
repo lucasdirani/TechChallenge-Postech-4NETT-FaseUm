@@ -3,48 +3,46 @@ using Postech.PhaseOne.GroupEight.TechChallenge.Domain.Commands.Inputs;
 using Postech.PhaseOne.GroupEight.TechChallenge.Domain.Commands.Outputs;
 using Postech.PhaseOne.GroupEight.TechChallenge.Domain.Entities;
 using Postech.PhaseOne.GroupEight.TechChallenge.Domain.Exceptions.Common;
-using Postech.PhaseOne.GroupEight.TechChallenge.Domain.Factories;
 using Postech.PhaseOne.GroupEight.TechChallenge.Domain.Factories.Interfaces;
 using Postech.PhaseOne.GroupEight.TechChallenge.Domain.Interfaces.Repositories;
 using Postech.PhaseOne.GroupEight.TechChallenge.Domain.ValueObjects;
-using Postech.PhaseOne.GroupEight.TechChallenge.Domain.Extensions;
+
 namespace Postech.PhaseOne.GroupEight.TechChallenge.Domain.Handlers.Contacts
 {
     /// <summary>
-    /// Inclui um novo contato na agenda
+    /// Handler that manages the registration of a contact.
     /// </summary>
-    /// <param name="contactRepository">Repositorio do Contato</param>
-    /// <param name="contactPhoneValueObjectFactory">Fabrica do telefone</param>
-    public class AddNewContactHandler(IContactRepository contactRepository, IContactPhoneValueObjectFactory contactPhoneValueObjectFactory) : IRequestHandler<ContactInput, DefaultOutput>
+    /// <param name="contactRepository">>Repository that accesses contacts stored in the database.</param>
+    /// <param name="contactPhoneFactory">Factory that encapsulates the logic for creating a contact phone number.</param>
+    public class AddNewContactHandler(IContactRepository contactRepository, IContactPhoneValueObjectFactory contactPhoneFactory) : IRequestHandler<AddContactInput, DefaultOutput>
     {
         private readonly IContactRepository _contactRepository = contactRepository;
-        private readonly IContactPhoneValueObjectFactory _contactPhoneValueObjectFactory = contactPhoneValueObjectFactory;
+        private readonly IContactPhoneValueObjectFactory _contactPhoneFactory = contactPhoneFactory;
 
         /// <summary>
-        /// Executa as regras de cada campo e incluí o contato na agenda do usuário.
+        /// Handles the register contact request.
         /// </summary>
-        /// <param name="request">Payload com os dados de contato</param>
-        /// <param name="cancellationToken">CancellationToken</param>
-        /// <returns></returns>
-        public async Task<DefaultOutput> Handle(ContactInput request, CancellationToken cancellationToken)
-        {
-            
-            ContactNameValueObject contactName = new(request.Name, request.LastName);
-            ContactEmailValueObject contactEmail = new(request.Email);
+        /// <param name="request">Data required to register the contact.</param>
+        /// <param name="cancellationToken">Token to cancel the contact register process.</param>
+        /// <returns>Set of data indicating whether the contact register operation was performed successfully.</returns>
+        public async Task<DefaultOutput> Handle(AddContactInput request, CancellationToken cancellationToken)
+        {       
+            ContactNameValueObject contactName = new(request.ContactFirstName, request.ContactLastName);
+            ContactEmailValueObject contactEmail = new(request.ContactEmail);
+            ContactPhoneValueObject contactPhone = await _contactPhoneFactory.CreateAsync(request.ContactPhoneNumber, request.ContactPhoneNumberAreaCode);
+            ContactEntity contact = new(contactName, contactEmail, contactPhone);
 
-            var contactPhone = await _contactPhoneValueObjectFactory.CreateAsync(request.Phone, request.AreaCode);
-            ContactEntity entity = new(contactName, contactEmail, contactPhone);
+            bool contactExists = await _contactRepository.ExistsAsync(x => 
+                x.ContactEmail.Equals(request.ContactEmail)
+                && x.ContactName.Equals(request.ContactFirstName)
+                && x.ContactPhone.Number.Equals(request.ContactPhoneNumber)
+                && x.ContactPhone.AreaCode.Equals(request.ContactPhoneNumberAreaCode));
 
-            var existsContato = await _contactRepository.ExistsAsync(x => x.ContactEmail.Equals(request.Email)
-                && x.ContactName.Equals(request.Name)
-                && x.ContactPhone.Number.Equals(request.Phone)
-                && x.ContactPhone.AreaCode.Equals(request.AreaCode)) ;
+            DomainException.ThrowWhen(contactExists, "The contact is already registered.");
 
-            DomainException.ThrowWhen(existsContato, "Contato já cadastrado.");
-
-            await _contactRepository.InsertAsync(entity);
+            await _contactRepository.InsertAsync(contact);
             await _contactRepository.SaveChangesAsync();
-            return new DefaultOutput(true, "Contato inserido com sucesso.", new { entity });
+            return new DefaultOutput(true, "The contact was registered successfully.", new { contact });
         }
     }
 }

@@ -26,23 +26,23 @@ namespace Postech.PhaseOne.GroupEight.TechChallenge.UnitTests.Suite.Domain.Handl
             ContactEmailValueObject registeredContactEmail = new(_faker.Internet.Email());
             ContactPhoneValueObject registeredContactPhone = new(_faker.Phone.PhoneNumber("9########"), AreaCodeValueObject.Create("11"));
             ContactEntity registeredContact = new(registeredContactName, registeredContactEmail, registeredContactPhone);
-            ContactInput input = new()
+            AddContactInput input = new()
             {
                 
-                Name = _faker.Name.FirstName(),
-                LastName = _faker.Name.LastName(),
-                Email = _faker.Internet.Email(),
-                Phone = _faker.Phone.PhoneNumber("9########"),
-                AreaCode = "12",
+                ContactFirstName = _faker.Name.FirstName(),
+                ContactLastName = _faker.Name.LastName(),
+                ContactEmail = _faker.Internet.Email(),
+                ContactPhoneNumber = _faker.Phone.PhoneNumber("9########"),
+                ContactPhoneNumberAreaCode = "12",
             };
             Mock<IContactRepository> contactRepository = new();
             contactRepository.Setup(c => c.InsertAsync(registeredContact));
             contactRepository.Setup(c => c.SaveChangesAsync());
             Mock<IContactPhoneValueObjectFactory> contactPhoneFactory = new();
             contactPhoneFactory
-                .Setup(c => c.CreateAsync(input.Phone, input.AreaCode))
-                .ReturnsAsync(new ContactPhoneValueObject(input.Phone, 
-                    AreaCodeValueObject.Create(input.AreaCode)));
+                .Setup(c => c.CreateAsync(input.ContactPhoneNumber, input.ContactPhoneNumberAreaCode))
+                .ReturnsAsync(new ContactPhoneValueObject(input.ContactPhoneNumber, 
+                    AreaCodeValueObject.Create(input.ContactPhoneNumberAreaCode)));
             AddNewContactHandler handler = new(contactRepository.Object, contactPhoneFactory.Object);         
             
             // Act
@@ -69,14 +69,14 @@ namespace Postech.PhaseOne.GroupEight.TechChallenge.UnitTests.Suite.Domain.Handl
             ContactEmailValueObject registeredContactEmail = new(_faker.Internet.Email());
             ContactPhoneValueObject registeredContactPhone = new(_faker.Phone.PhoneNumber("9########"), AreaCodeValueObject.Create("11"));
             ContactEntity registeredContact = new(registeredContactName, registeredContactEmail, registeredContactPhone);
-            ContactInput input = new()
+            AddContactInput input = new()
             {
                 
-                Name = newInvalidFirstName,
-                LastName = _faker.Name.LastName(),
-                Email = _faker.Internet.Email(),
-                Phone = _faker.Phone.PhoneNumber("9########"),
-                AreaCode = "12",
+                ContactFirstName = newInvalidFirstName,
+                ContactLastName = _faker.Name.LastName(),
+                ContactEmail = _faker.Internet.Email(),
+                ContactPhoneNumber = _faker.Phone.PhoneNumber("9########"),
+                ContactPhoneNumberAreaCode = "12",
             };
             Mock<IContactRepository> contactRepository = new();
             contactRepository.Setup(c => c.InsertAsync(registeredContact));
@@ -105,13 +105,13 @@ namespace Postech.PhaseOne.GroupEight.TechChallenge.UnitTests.Suite.Domain.Handl
             ContactEmailValueObject registeredContactEmail = new(_faker.Internet.Email());
             ContactPhoneValueObject registeredContactPhone = new(_faker.Phone.PhoneNumber("9########"), AreaCodeValueObject.Create("11"));
             ContactEntity registeredContact = new(registeredContactName, registeredContactEmail, registeredContactPhone);
-            ContactInput input = new()
+            AddContactInput input = new()
             {            
-                Name = _faker.Name.FirstName(),
-                LastName = newInvalidLastName,
-                Email = _faker.Internet.Email(),
-                Phone = _faker.Phone.PhoneNumber("9########"),
-                AreaCode = "12",
+                ContactFirstName = _faker.Name.FirstName(),
+                ContactLastName = newInvalidLastName,
+                ContactEmail = _faker.Internet.Email(),
+                ContactPhoneNumber = _faker.Phone.PhoneNumber("9########"),
+                ContactPhoneNumberAreaCode = "12",
             };
             Mock<IContactRepository> contactRepository = new();
             contactRepository.Setup(c => c.InsertAsync(registeredContact));
@@ -141,13 +141,13 @@ namespace Postech.PhaseOne.GroupEight.TechChallenge.UnitTests.Suite.Domain.Handl
             ContactEmailValueObject registeredContactEmail = new(_faker.Internet.Email());
             ContactPhoneValueObject registeredContactPhone = new(_faker.Phone.PhoneNumber("9########"), AreaCodeValueObject.Create("11"));
             ContactEntity registeredContact = new(registeredContactName, registeredContactEmail, registeredContactPhone);
-            ContactInput input = new()
+            AddContactInput input = new()
             {            
-                Name = _faker.Name.FirstName(),
-                LastName = _faker.Name.LastName(),
-                Email = newInvalidEmailAddress,
-                Phone = _faker.Phone.PhoneNumber("9########"),
-                AreaCode = "12",
+                ContactFirstName = _faker.Name.FirstName(),
+                ContactLastName = _faker.Name.LastName(),
+                ContactEmail = newInvalidEmailAddress,
+                ContactPhoneNumber = _faker.Phone.PhoneNumber("9########"),
+                ContactPhoneNumberAreaCode = "12",
             };
             Mock<IContactRepository> contactRepository = new();
             contactRepository.Setup(c => c.InsertAsync(registeredContact));
@@ -182,20 +182,20 @@ namespace Postech.PhaseOne.GroupEight.TechChallenge.UnitTests.Suite.Domain.Handl
             ContactEmailValueObject registeredContactEmail = new(_faker.Internet.Email());
             ContactPhoneValueObject registeredContactPhone = new(_faker.Phone.PhoneNumber("9########"), AreaCodeValueObject.Create("11"));
             ContactEntity registeredContact = new(registeredContactName, registeredContactEmail, registeredContactPhone);
-            ContactInput input = new()
+            AddContactInput input = new()
             {
                 
-                Name = _faker.Name.FirstName(),
-                LastName = _faker.Name.LastName(),
-                Email = _faker.Internet.Email(),
-                Phone = newInvalidPhoneNumber,
-                AreaCode = "12",
+                ContactFirstName = _faker.Name.FirstName(),
+                ContactLastName = _faker.Name.LastName(),
+                ContactEmail = _faker.Internet.Email(),
+                ContactPhoneNumber = newInvalidPhoneNumber,
+                ContactPhoneNumberAreaCode = "12",
             };
             Mock<IContactRepository> contactRepository = new();
             contactRepository.Setup(c => c.InsertAsync(registeredContact));
             Mock<IContactPhoneValueObjectFactory> contactPhoneFactory = new();
             contactPhoneFactory
-                .Setup(c => c.CreateAsync(input.Phone, input.AreaCode))
+                .Setup(c => c.CreateAsync(input.ContactPhoneNumber, input.ContactPhoneNumberAreaCode))
                 .ThrowsAsync(new ContactPhoneNumberException("The phone number is invalid.", newInvalidPhoneNumber));
             AddNewContactHandler handler = new(contactRepository.Object, contactPhoneFactory.Object);
 
@@ -219,19 +219,19 @@ namespace Postech.PhaseOne.GroupEight.TechChallenge.UnitTests.Suite.Domain.Handl
             ContactEmailValueObject registeredContactEmail = new(_faker.Internet.Email());
             ContactPhoneValueObject registeredContactPhone = new(_faker.Phone.PhoneNumber("9########"), AreaCodeValueObject.Create("11"));
             ContactEntity registeredContact = new(registeredContactName, registeredContactEmail, registeredContactPhone);
-            ContactInput input = new()
+            AddContactInput input = new()
             {            
-                Name = _faker.Name.FirstName(),
-                LastName = _faker.Name.LastName(),
-                Email = _faker.Internet.Email(),
-                Phone = _faker.Phone.PhoneNumber("9########"),
-                AreaCode = nonExistingAreaCode,
+                ContactFirstName = _faker.Name.FirstName(),
+                ContactLastName = _faker.Name.LastName(),
+                ContactEmail = _faker.Internet.Email(),
+                ContactPhoneNumber = _faker.Phone.PhoneNumber("9########"),
+                ContactPhoneNumberAreaCode = nonExistingAreaCode,
             };
             Mock<IContactRepository> contactRepository = new();
             contactRepository.Setup(c => c.GetByIdAsync(registeredContact.Id)).ReturnsAsync(registeredContact);
             Mock<IContactPhoneValueObjectFactory> contactPhoneFactory = new();
             contactPhoneFactory
-                .Setup(c => c.CreateAsync(input.Phone, input.AreaCode))
+                .Setup(c => c.CreateAsync(input.ContactPhoneNumber, input.ContactPhoneNumberAreaCode))
                 .ThrowsAsync(new NotFoundException("The area code was not found."));
             AddNewContactHandler handler = new(contactRepository.Object, contactPhoneFactory.Object);
 
