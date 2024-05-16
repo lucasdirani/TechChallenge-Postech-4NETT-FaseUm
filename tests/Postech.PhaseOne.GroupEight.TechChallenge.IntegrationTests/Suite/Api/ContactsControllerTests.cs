@@ -12,11 +12,15 @@ using Postech.PhaseOne.GroupEight.TechChallenge.IntegrationTests.Configurations.
 using System.Net;
 using System.Text;
 using System.Text.Json;
+using Newtonsoft.Json;
+using Postech.PhaseOne.GroupEight.TechChallenge.IntegrationTests.Helpers;
 
 namespace Postech.PhaseOne.GroupEight.TechChallenge.IntegrationTests.Suite.Api
 {
     public class ContactsControllerTests(ContactManagementAppWebApplicationFactory factory) : IClassFixture<ContactManagementAppWebApplicationFactory>, IAsyncLifetime
     {
+        private readonly HttpClient _client = factory.CreateClient();
+
         private readonly ContactManagementAppWebApplicationFactory _factory = factory;
         private readonly Faker _faker = new("pt_BR");
 
@@ -71,6 +75,30 @@ namespace Postech.PhaseOne.GroupEight.TechChallenge.IntegrationTests.Suite.Api
             responseMessageContent.Should().NotBeNull();
             responseMessageContent?.Message.Should().NotBeNullOrEmpty();
             responseMessageContent?.Success.Should().BeTrue();
+        }
+        
+        [Theory(DisplayName = "Inserting contact with success")]
+        [InlineData("Tatiana", "Lima", "tatidornel@gmail.com", "974025307", "51")]
+        [InlineData("Elias", "Rosa", "eliasrosa@gmail.com", "974025308", "11")]
+        [InlineData("Veronica", "Freitas", "veronica@gmail.com", "974025309", "38")]
+        [Trait("Action", "Controller")]
+        public async Task Controller_InsertingContact_ShouldBeOk(string name,
+                string lastName, string email, string phone, string areaCode)
+        {
+            ContactInput input = new()
+            {
+                AreaCode = areaCode,
+                Name = name,
+                Email = email,
+                Phone = phone,
+                LastName = lastName,
+            };
+            var content = ContentHelper.GetStringContent(input);
+            var response = await _client.PostAsync("/contacts", content);
+            var result = JsonConvert.DeserializeObject<DefaultOutput>(response.Content.ReadAsStringAsync().Result);
+
+            Assert.NotNull(result);
+            Assert.True(result.Success);
         }
     }
 }
