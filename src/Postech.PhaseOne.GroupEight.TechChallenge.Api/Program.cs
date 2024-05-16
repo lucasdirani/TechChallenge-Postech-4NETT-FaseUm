@@ -18,9 +18,9 @@ builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new OpenApiInfo 
     { 
-        Title = "Documentação do Tech challenge 2024", 
+        Title = "ContactManagement API (Tech Challenge)", 
         Version = "v1", 
-        Description = "Alunos responsáveis: Ricardo Fulgencio, Breno Gomes, Lucas Pinho, Lucas Ruiz e Tatiana Lima"
+        Description = "Alunos responsáveis: Breno Gomes, Lucas Pinho, Lucas Ruiz, Ricardo Fulgencio e Tatiana Lima"
     });
     c.EnableAnnotations();
 });
@@ -83,6 +83,24 @@ app.MapPost("/contacts", async (IMediator mediator, [FromBody] AddContactInput r
 .WithMetadata(new SwaggerResponseAttribute(200, "Contact registered successfully"))
 .WithMetadata(new SwaggerResponseAttribute(400, "The data provided for contact registration is invalid"))
 .WithMetadata(new SwaggerResponseAttribute(500, "Unexpected error during contact registration"))
+.WithOpenApi();
+
+app.MapDelete("/contacts", async (IMediator mediator, [FromBody] DeleteContactInput request) =>
+{
+    DomainException.ThrowWhenThereAreErrorMessages(request.Validate());
+    return await mediator.Send(request);
+})
+.WithName("Delete Contact")
+.WithMetadata(new SwaggerOperationAttribute(
+        "Deletes an existing contact",
+        "Deletes an existing contact according to its identifier."
+    )
+)
+.WithMetadata(new SwaggerParameterAttribute("Data for deleting the contact"))
+.WithMetadata(new SwaggerResponseAttribute(200, "The contact was successfully deleted"))
+.WithMetadata(new SwaggerResponseAttribute(400, "The data provided to delete the contact is invalid or the contact has already been deleted"))
+.WithMetadata(new SwaggerResponseAttribute(404, "The contact provided for deletion does not exist"))
+.WithMetadata(new SwaggerResponseAttribute(500, "Unexpected error while deleting contact"))
 .WithOpenApi();
 
 app.Run();
