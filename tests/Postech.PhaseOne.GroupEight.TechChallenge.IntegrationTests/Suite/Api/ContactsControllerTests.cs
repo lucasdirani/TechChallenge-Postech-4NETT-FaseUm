@@ -3,6 +3,7 @@ using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Postech.PhaseOne.GroupEight.TechChallenge.Domain.Commands.Inputs;
+using Postech.PhaseOne.GroupEight.TechChallenge.Domain.Commands.Outputs;
 using Postech.PhaseOne.GroupEight.TechChallenge.Domain.Entities;
 using Postech.PhaseOne.GroupEight.TechChallenge.Domain.Interfaces.Repositories;
 using Postech.PhaseOne.GroupEight.TechChallenge.Domain.ValueObjects;
@@ -59,12 +60,17 @@ namespace Postech.PhaseOne.GroupEight.TechChallenge.IntegrationTests.Suite.Api
 
             // Act
             using HttpClient httpClient = _factory.CreateClient();
-            var Content = new StringContent(JsonSerializer.Serialize(updateContactInput), Encoding.UTF8, "application/json");
-            var response = await httpClient.PutAsync("/contacts", Content);
+            using HttpResponseMessage responseMessage = await httpClient.SendAsync(new HttpRequestMessage(HttpMethod.Put, "/contacts")
+            {
+                Content = new StringContent(JsonSerializer.Serialize(updateContactInput), Encoding.UTF8, "application/json")
+            });
 
             // Assert
-            response.StatusCode.Should().Be(HttpStatusCode.OK);
-            response.Should().NotBeNull();
+            responseMessage.StatusCode.Should().Be(HttpStatusCode.OK);
+            DefaultOutput? responseMessageContent = JsonSerializer.Deserialize<DefaultOutput>(await responseMessage.Content.ReadAsStringAsync());
+            responseMessageContent.Should().NotBeNull();
+            responseMessageContent?.Message.Should().NotBeNullOrEmpty();
+            responseMessageContent?.Success.Should().BeTrue();
         }
     }
 }
