@@ -17,14 +17,12 @@ builder.Services.AddEndpointsApiExplorer();
 
 builder.Services.AddSwaggerGen(c =>
 {
-    c.SwaggerDoc("v1", new OpenApiInfo { Title = "Documentação do Tech challenge 2024", Version = "v1", 
-        Description = "Alunos responsáveis: Ricardo Fulgencio, Breno Gomes, Lucas Pinho, Lucas Ruiz e Tatiana Lima "
+    c.SwaggerDoc("v1", new OpenApiInfo { Title = "DocumentaÃ§Ã£o do Tech challenge 2024", Version = "v1", 
+        Description = "Alunos responsÃ¡veis: Ricardo Fulgencio, Breno Gomes, Lucas Pinho, Lucas Ruiz e Tatiana Lima "
     });
     
     c.EnableAnnotations();
 });
-
-
 
 builder.Services.AddDbContext(configuration);
 builder.Services.AddMediatR();
@@ -82,10 +80,23 @@ app.MapPost("/contacts",
                         "Cadastra um contato na agenda conforme os dados informados"))
 .WithMetadata(new SwaggerParameterAttribute("Dados do novo contato"))
 .WithMetadata(new SwaggerResponseAttribute(200, "Contato cadastrado"))
-.WithMetadata(new SwaggerResponseAttribute(400, "Request inválido"))
+.WithMetadata(new SwaggerResponseAttribute(400, "Request invÃ¡lido"))
 .WithMetadata(new SwaggerResponseAttribute(500, "Erro inesperado"))
 .WithOpenApi();
 
+app.MapPut("/contacts", async (IMediator mediator, [FromBody] UpdateContactInput request) =>
+{
+    return await mediator.Send(request);
+})
+.WithName("Update Contact")
+.WithMetadata(new SwaggerOperationAttribute
+                        ("Modify a contact in the Agenda",
+                        "Modifies a contact in the agenda according to the provided data"))
+.WithMetadata(new SwaggerParameterAttribute("Data of the new contact"))
+.WithMetadata(new SwaggerResponseAttribute(200, "Contact updated"))
+.WithMetadata(new SwaggerResponseAttribute(400, "Invalid request"))
+.WithMetadata(new SwaggerResponseAttribute(500, "Unexpected error"))
+.WithOpenApi();
 app.Run();
 
 public partial class Program
