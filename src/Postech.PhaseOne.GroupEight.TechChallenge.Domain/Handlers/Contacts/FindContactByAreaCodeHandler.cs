@@ -24,7 +24,7 @@ namespace Postech.PhaseOne.GroupEight.TechChallenge.Domain.Handlers.Contacts
         public async Task<DefaultOutput> Handle(FindContactInput request, CancellationToken cancellationToken)
         {
             Expression<Func<ContactEntity, bool>> expression = contact =>
-                   (request.AreaCodeValue == "" || contact.ContactPhone.AreaCode.Value == request.AreaCodeValue) && contact.Active;
+                   contact.ContactPhone.AreaCode.Value == request.AreaCodeValue && contact.Active;
             List<ContactEntity> contacts = await _contactRepository.FindAsync(expression);
             return new DefaultOutput(true, contacts.Select(contact => new FindContactByAreaCodeViewModel()
             {

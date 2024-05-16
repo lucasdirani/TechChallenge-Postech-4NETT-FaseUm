@@ -22,15 +22,7 @@ namespace Postech.PhaseOne.GroupEight.TechChallenge.UnitTests.Suite.Domain.Handl
         [InlineData("81")]
         [Trait("Action", "Handle")]
         public async Task Handle_FetchingExistentContactsByAreaCode_ShouldReturnContactsList(string InputAreaCodeValue)
-        {
-            /*
-            var contactNames = new AutoFaker<ContactNameValueObject>()
-                .RuleFor(x => x.FirstName, f => f.Name.FirstName())
-                .RuleFor(x => x.LastName, f => f.Name.LastName())
-                .Generate(10);
-            */
-
-
+        { 
             ContactNameValueObject contactNameToBeFound1 = new(_faker.Name.FirstName(), _faker.Name.LastName());
             ContactEmailValueObject contactEmailToBeFound1 = new(_faker.Internet.Email());
             ContactPhoneValueObject contactPhoneToBeFound1 = new(_faker.Phone.PhoneNumber("9########"), AreaCodeValueObject.Create(InputAreaCodeValue));
