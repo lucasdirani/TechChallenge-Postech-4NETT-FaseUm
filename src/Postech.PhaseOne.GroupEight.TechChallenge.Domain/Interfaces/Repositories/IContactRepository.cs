@@ -5,6 +5,7 @@ namespace Postech.PhaseOne.GroupEight.TechChallenge.Domain.Interfaces.Repositori
 {
     public interface IContactRepository : IRepository<ContactEntity, Guid>
     {
+        Task<IEnumerable<ContactEntity>> GetContactsByAreaCodeValueAsync(string areaCodeValue);
         Task<AreaCodeValueObject?> GetAreaCodeByValueAsync(string areaCodeValue);
         Task<ContactPhoneValueObject?> GetContactPhoneByNumberAndAreaCodeValueAsync(string phoneNumber, string areaCodeValue);
     }

@@ -19,7 +19,7 @@ namespace Postech.PhaseOne.GroupEight.TechChallenge.Domain.ValueObjects
         [GeneratedRegex("^[A-Za-zÀ-ÖØ-öø-ÿ]+(?:-[A-Za-zÀ-ÖØ-öø-ÿ]+)?(?:\\s[A-Za-zÀ-ÖØ-öø-ÿ]+(?:-[A-Za-zÀ-ÖØ-öø-ÿ]+)?)?$", RegexOptions.Compiled)]
         private static partial Regex FirstNameRegex();
 
-        [GeneratedRegex("^[A-Za-zÀ-ÖØ-öø-ÿ]+(?:-[A-Za-zÀ-ÖØ-öø-ÿ]+)?(?:\\s[A-Za-zÀ-ÖØ-öø-ÿ]+(?:-[A-Za-zÀ-ÖØ-öø-ÿ]+)?)?$", RegexOptions.Compiled)]
+        [GeneratedRegex("^[A-Za-zÀ-ÖØ-öø-ÿ']+(?:-[A-Za-zÀ-ÖØ-öø-ÿ']+)?(?:\\s[A-Za-zÀ-ÖØ-öø-ÿ']+(?:-[A-Za-zÀ-ÖØ-öø-ÿ']+)?)?$", RegexOptions.Compiled)]
         private static partial Regex LastNameRegex();
     }
 }
