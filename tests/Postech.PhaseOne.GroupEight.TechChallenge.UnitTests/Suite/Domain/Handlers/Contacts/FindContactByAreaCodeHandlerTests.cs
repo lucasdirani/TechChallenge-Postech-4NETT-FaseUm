@@ -11,7 +11,7 @@ using Postech.PhaseOne.GroupEight.TechChallenge.UnitTests.Fakers.Domain.Entities
 
 namespace Postech.PhaseOne.GroupEight.TechChallenge.UnitTests.Suite.Domain.Handlers.Contacts
 {
-    public class FindContactHandlerTests
+    public class FindContactByAreaCodeHandlerTests
     {
         [Theory(DisplayName = "Fetching list of contacts by area code.")]
         [InlineData("11")]
