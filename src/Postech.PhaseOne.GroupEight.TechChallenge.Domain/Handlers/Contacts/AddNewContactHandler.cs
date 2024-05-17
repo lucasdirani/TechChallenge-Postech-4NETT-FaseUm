@@ -35,10 +35,11 @@ namespace Postech.PhaseOne.GroupEight.TechChallenge.Domain.Handlers.Contacts
             var contactPhone = await _contactPhoneValueObjectFactory.CreateAsync(request.Phone, request.AreaCode);
             ContactEntity entity = new(contactName, contactEmail, contactPhone);
 
-            var existsContato = await _contactRepository.ExistsAsync(x => x.ContactEmail.Equals(request.Email)
-                && x.ContactName.Equals(request.Name)
+            var existsContato = await _contactRepository.ExistsAsync(x => x.ContactEmail.Value.Equals(request.Email)
+                && x.ContactName.FirstName.Equals(request.Name)
+                && x.ContactName.LastName.Equals(request.LastName)
                 && x.ContactPhone.Number.Equals(request.Phone)
-                && x.ContactPhone.AreaCode.Equals(request.AreaCode)) ;
+                && x.ContactPhone.AreaCode.Value.Equals(request.AreaCode)) ;
 
             DomainException.ThrowWhen(existsContato, "Contato já cadastrado.");
 

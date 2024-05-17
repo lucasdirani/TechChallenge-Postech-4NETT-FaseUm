@@ -6,6 +6,10 @@ namespace Postech.PhaseOne.GroupEight.TechChallenge.Domain.Commands.Outputs
     [ExcludeFromCodeCoverage]
     public record DefaultOutput
     {
+        public DefaultOutput()
+        {        
+        }
+
         public DefaultOutput(bool success, string message, object data) 
         {
             Success = success;
