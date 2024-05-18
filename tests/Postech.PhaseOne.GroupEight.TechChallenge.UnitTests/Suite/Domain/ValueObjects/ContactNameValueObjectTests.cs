@@ -1,4 +1,5 @@
-﻿using FluentAssertions;
+﻿using Bogus;
+using FluentAssertions;
 using Postech.PhaseOne.GroupEight.TechChallenge.Domain.Exceptions.ValueObjects;
 using Postech.PhaseOne.GroupEight.TechChallenge.Domain.ValueObjects;
 
@@ -6,6 +7,8 @@ namespace Postech.PhaseOne.GroupEight.TechChallenge.UnitTests.Suite.Domain.Value
 {
     public class ContactNameValueObjectTests
     {
+        private readonly Faker _faker = new("pt_BR");
+
         [Theory(DisplayName = "Constructing a valid object of type ContactNameValueObject")]
         [InlineData("Lucas", "Dirani")]
         [InlineData("Ricardo", "Fulgencio")]
@@ -52,6 +55,56 @@ namespace Postech.PhaseOne.GroupEight.TechChallenge.UnitTests.Suite.Domain.Value
             ContactLastNameException exception = Assert.Throws<ContactLastNameException>(() => new ContactNameValueObject(firstName, lastName));
             exception.Message.Should().NotBeNullOrEmpty();
             exception.LastNameValue.Should().Be(lastName);
+        }
+
+        [Theory(DisplayName = "Contact's first name is being changed.")]
+        [InlineData("Lucas", "Lucca")]
+        [InlineData("Tatiana", "Tathiana")]
+        [Trait("Action", "HasBeenChanged")]
+        public void HasBeenChanged_ContactFirstNameHasBeenChanged_ShouldReturnTrue(string currentFirstName, string otherFirstName)
+        {
+            ContactNameValueObject contactName = new(currentFirstName, _faker.Name.LastName());
+            contactName.HasBeenChanged(otherFirstName, contactName.LastName).Should().BeTrue();
+        }
+
+        [Theory(DisplayName = "Contact's last name is being changed.")]
+        [InlineData("Ruiz", "Dirani")]
+        [InlineData("Silva", "Santos")]
+        [Trait("Action", "HasBeenChanged")]
+        public void HasBeenChanged_ContactLastNameHasBeenChanged_ShouldReturnTrue(string currentLastName, string otherLastName)
+        {
+            ContactNameValueObject contactName = new(_faker.Name.FirstName(), currentLastName);
+            contactName.HasBeenChanged(contactName.FirstName, otherLastName).Should().BeTrue();
+        }
+
+        [Theory(DisplayName = "Contact's first name and last name are being changed.")]
+        [InlineData("Lucas", "Dirani", "Lucca", "Ruiz")]
+        [InlineData("Cristiane", "Jesus", "Cristina", "Andrade")]
+        [InlineData("Rafael", "Silva", "Raphael", "Souza")]
+        [Trait("Action", "HasBeenChanged")]
+        public void HasBeenChanged_ContactFirstNameAndLastNameHaveBeenChanged_ShouldReturnTrue(
+            string currentFirstName, 
+            string currentLastName,
+            string otherFirstName,
+            string otherLastName)
+        {
+            ContactNameValueObject contactName = new(currentFirstName, currentLastName);
+            contactName.HasBeenChanged(otherFirstName, otherLastName).Should().BeTrue();
+        }
+
+        [Theory(DisplayName = "Contact's first name and last name are not being changed.")]
+        [InlineData("Lucas", "Dirani", "Lucas", "Dirani")]
+        [InlineData("Cristiane", "Jesus", "Cristiane", "Jesus")]
+        [InlineData("Rafael", "Silva", "Rafael", "Silva")]
+        [Trait("Action", "HasBeenChanged")]
+        public void HasBeenChanged_ContactFirstNameAndLastNameHaveNotBeenChanged_ShouldReturnFalse(
+            string currentFirstName,
+            string currentLastName,
+            string otherFirstName,
+            string otherLastName)
+        {
+            ContactNameValueObject contactName = new(currentFirstName, currentLastName);
+            contactName.HasBeenChanged(otherFirstName, otherLastName).Should().BeFalse();
         }
     }
 }

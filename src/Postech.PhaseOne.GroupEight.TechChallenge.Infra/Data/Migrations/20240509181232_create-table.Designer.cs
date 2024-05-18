@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Postech.PhaseOne.GroupEight.TechChallenge.Infra.Data.Contexts;
@@ -11,9 +12,11 @@ using Postech.PhaseOne.GroupEight.TechChallenge.Infra.Data.Contexts;
 namespace Postech.PhaseOne.GroupEight.TechChallenge.Infra.Data.Migrations
 {
     [DbContext(typeof(ContactManagementDbContext))]
-    partial class ContactManagementDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240509181232_create-table")]
+    partial class createtable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

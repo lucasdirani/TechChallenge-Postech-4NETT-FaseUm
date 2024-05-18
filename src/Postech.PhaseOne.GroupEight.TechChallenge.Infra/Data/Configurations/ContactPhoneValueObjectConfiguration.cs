@@ -32,7 +32,8 @@ namespace Postech.PhaseOne.GroupEight.TechChallenge.Infra.Data.Configurations
                 .IsRequired()
                 .HasConstraintName("fk_tb_area_code_tb_contact_phone");
             builder.HasIndex("AreaCodeId").HasDatabaseName("ix_tb_contact_phone_area_code_id");
-            builder.HasIndex(c => c.Number).IsUnique().HasDatabaseName("ix_tb_contact_phone_contact_phone_number");
+            builder.HasIndex(c => c.Number).HasDatabaseName("ix_tb_contact_phone_contact_phone_number");
+            builder.Navigation(c => c.AreaCode).AutoInclude();
         }
     }
 }

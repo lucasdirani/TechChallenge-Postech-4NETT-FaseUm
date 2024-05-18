@@ -35,5 +35,25 @@ namespace Postech.PhaseOne.GroupEight.TechChallenge.UnitTests.Suite.Domain.Value
             exception.Message.Should().NotBeNullOrEmpty();
             exception.EmailAddressValue.Should().Be(value);
         }
+
+        [Theory(DisplayName = "Contact's email address is being changed.")]
+        [InlineData("lucas.dirani@gmail.com", "lucas.ruiz@gmail.com")]
+        [InlineData("rfulgencio3@gmail.com", "rfulgencio3@hotmail.com")]
+        [Trait("Action", "HasBeenChanged")]
+        public void HasBeenChanged_EmailAddressHasBeenChanged_ShouldReturnTrue(string currentEmailAddress, string otherEmailAddress)
+        {
+            ContactEmailValueObject contactEmail = new(currentEmailAddress);
+            contactEmail.HasBeenChanged(otherEmailAddress).Should().BeTrue();
+        }
+
+        [Theory(DisplayName = "Contact's email address is being changed.")]
+        [InlineData("lucas.dirani@gmail.com", "lucas.dirani@gmail.com")]
+        [InlineData("rfulgencio3@gmail.com", "rfulgencio3@gmail.com")]
+        [Trait("Action", "HasBeenChanged")]
+        public void HasBeenChanged_EmailAddressHasNotBeenChanged_ShouldReturnFalse(string currentEmailAddress, string otherEmailAddress)
+        {
+            ContactEmailValueObject contactEmail = new(currentEmailAddress);
+            contactEmail.HasBeenChanged(otherEmailAddress).Should().BeFalse();
+        }
     }
 }
