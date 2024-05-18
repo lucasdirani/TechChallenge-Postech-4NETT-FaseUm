@@ -5,6 +5,7 @@ using Postech.PhaseOne.GroupEight.TechChallenge.Api.Setup;
 using Postech.PhaseOne.GroupEight.TechChallenge.Domain.Commands.Inputs;
 using Postech.PhaseOne.GroupEight.TechChallenge.Domain.Commands.Outputs;
 using Postech.PhaseOne.GroupEight.TechChallenge.Domain.Exceptions.Common;
+using Swashbuckle.AspNetCore.Annotations;
 using System.Net;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
@@ -63,7 +64,14 @@ app.MapGet("/contacts", async (IMediator mediator, [FromBody] FindContactInput r
 {
     return await mediator.Send(request);
 })
-.WithName("Find Contacts")
+.WithName("Find Contact")
+.WithMetadata(new SwaggerOperationAttribute
+                        ("Consultar contatos na Agenda",
+                        "Retorna contatos da agenda conforme o DDD informado"))
+.WithMetadata(new SwaggerParameterAttribute("Dados do novo contato"))
+.WithMetadata(new SwaggerResponseAttribute(200, "Contatos existentes retornados."))
+.WithMetadata(new SwaggerResponseAttribute(400, "Request inválido"))
+.WithMetadata(new SwaggerResponseAttribute(500, "Erro inesperado"))
 .WithOpenApi();
 
 app.Run();
