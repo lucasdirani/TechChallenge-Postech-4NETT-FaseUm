@@ -29,14 +29,14 @@ namespace Postech.PhaseOne.GroupEight.TechChallenge.Domain.Handlers.Contacts
         /// <exception cref="ContactEmailAddressException">The new email address provided for the contact is in an invalid format.</exception>
         public async Task<DefaultOutput> Handle(UpdateContactInput request, CancellationToken cancellationToken)
         {
-            var existsContact = await _contactRepository.ExistsAsync(x => x.Id != request.ContactId
+            bool contactExists = await _contactRepository.ExistsAsync(x => x.Id != request.ContactId
                 && x.ContactEmail.Value.Equals(request.ContactEmail)
                 && x.ContactName.FirstName.Equals(request.ContactFirstName)
                 && x.ContactName.LastName.Equals(request.ContactLastName)
                 && x.ContactPhone.Number.Equals(request.ContactPhoneNumber)
                 && x.ContactPhone.AreaCode.Value.Equals(request.ContactPhoneNumberAreaCode));
 
-            DomainException.ThrowWhen(existsContact, "Contact already registered.");
+            DomainException.ThrowWhen(contactExists, "Contact already registered.");
             ContactEntity? contact = await _contactRepository.GetByIdAsync(request.ContactId);
             NotFoundException.ThrowWhenNullEntity(contact, "Contact could not be found");
             contact.UpdateContactName(request.ContactFirstName, request.ContactLastName);

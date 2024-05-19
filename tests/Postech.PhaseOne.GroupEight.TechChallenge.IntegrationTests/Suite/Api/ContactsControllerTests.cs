@@ -19,26 +19,18 @@ namespace Postech.PhaseOne.GroupEight.TechChallenge.IntegrationTests.Suite.Api
     {
         private readonly Faker _faker = new("pt_BR");
 
-        [Theory(DisplayName = "Add an new contact with success")]
-        [InlineData("Tatiana", "Lima", "tatidornel@gmail.com", "974025307", "51")]
-        [InlineData("Elias", "Rosa", "eliasrosa@gmail.com", "974025308", "11")]
-        [InlineData("Veronica", "Freitas", "veronica@gmail.com", "974025309", "38")]
+        [Fact]
         [Trait("Action", "Contacts")]
-        public async Task AddContactEndpoint_AddAnNewContact_ShouldAddContact(
-            string contactFirstName,
-            string contactLastName,
-            string contactEmail,
-            string contactPhoneNumber,
-            string contactPhoneNumberAreaCode)
+        public async Task AddContactEndpoint_AddAnNewContact_ShouldAddContact()
         {
             // Arrange
             AddContactInput addContactInput = new()
             {
-                ContactPhoneNumberAreaCode = contactPhoneNumberAreaCode,
-                ContactFirstName = contactFirstName,
-                ContactEmail = contactEmail,
-                ContactPhoneNumber = contactPhoneNumber,
-                ContactLastName = contactLastName,
+                ContactPhoneNumberAreaCode = "31",
+                ContactFirstName = _faker.Name.FirstName(),
+                ContactEmail = _faker.Internet.Email(),
+                ContactPhoneNumber = _faker.Phone.PhoneNumber("9########"),
+                ContactLastName = _faker.Name.LastName(),
             };
 
             // Act
@@ -94,6 +86,7 @@ namespace Postech.PhaseOne.GroupEight.TechChallenge.IntegrationTests.Suite.Api
         }
 
         [Fact]
+        [Trait("Action", "Contacts")]
         public async Task FindContactEndpoint_FetchAnExistingContact_ShouldFindContact()
         {
             // Arrange

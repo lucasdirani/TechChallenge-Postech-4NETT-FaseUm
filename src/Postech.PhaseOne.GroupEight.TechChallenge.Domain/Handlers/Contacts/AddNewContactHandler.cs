@@ -32,11 +32,12 @@ namespace Postech.PhaseOne.GroupEight.TechChallenge.Domain.Handlers.Contacts
             ContactPhoneValueObject contactPhone = await _contactPhoneFactory.CreateAsync(request.ContactPhoneNumber, request.ContactPhoneNumberAreaCode);
             ContactEntity contact = new(contactName, contactEmail, contactPhone);
 
-            var existsContato = await _contactRepository.ExistsAsync(x => x.ContactEmail.Value.Equals(request.Email)
-                && x.ContactName.FirstName.Equals(request.Name)
-                && x.ContactName.LastName.Equals(request.LastName)
-                && x.ContactPhone.Number.Equals(request.Phone)
-                && x.ContactPhone.AreaCode.Value.Equals(request.AreaCode)) ;
+            bool contactExists = await _contactRepository.ExistsAsync(x => 
+                x.ContactEmail.Value.Equals(request.ContactEmail)
+                && x.ContactName.FirstName.Equals(request.ContactFirstName)
+                && x.ContactName.LastName.Equals(request.ContactLastName)
+                && x.ContactPhone.Number.Equals(request.ContactPhoneNumber)
+                && x.ContactPhone.AreaCode.Value.Equals(request.ContactPhoneNumberAreaCode));
 
             DomainException.ThrowWhen(contactExists, "The contact is already registered.");
 
