@@ -27,6 +27,7 @@ builder.Services.AddSwaggerGen(c =>
 builder.Services.AddDbContext(configuration);
 builder.Services.AddMediatR();
 builder.Services.AddDependencyRepository();
+builder.Services.AddDependencyChecker();
 builder.Services.AddDependencyFactory();
 builder.Services.AddDependencyHandler();
 builder.Services.AddMiniProfiler();
@@ -45,7 +46,7 @@ app.UseExceptionHandler(configure =>
 {
     configure.Run(async context =>
     {
-        var exceptionHandlerPathFeature = context.Features.Get<IExceptionHandlerPathFeature>();
+        IExceptionHandlerPathFeature? exceptionHandlerPathFeature = context.Features.Get<IExceptionHandlerPathFeature>();
         if (exceptionHandlerPathFeature?.Error is not null)
         {
             int statusCode = (int) HttpStatusCode.InternalServerError;

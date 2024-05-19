@@ -8,5 +8,6 @@ namespace Postech.PhaseOne.GroupEight.TechChallenge.Domain.Interfaces.Repositori
         Task<IEnumerable<ContactEntity>> GetContactsByAreaCodeValueAsync(string areaCodeValue);
         Task<AreaCodeValueObject?> GetAreaCodeByValueAsync(string areaCodeValue);
         Task<ContactPhoneValueObject?> GetContactPhoneByNumberAndAreaCodeValueAsync(string phoneNumber, string areaCodeValue);
+        Task<IEnumerable<ContactEntity>> GetContactsByContactPhoneAsync(ContactPhoneValueObject contactPhone);
     }
 }

@@ -69,5 +69,18 @@ namespace Postech.PhaseOne.GroupEight.TechChallenge.Domain.Entities
             if(IsActive() != isActive)          
                 UpdateActiveStatus(isActive);                  
         }
+
+        public override bool Equals(object? obj)
+        {
+            return obj is ContactEntity entity &&
+                   EqualityComparer<ContactNameValueObject>.Default.Equals(ContactName, entity.ContactName) &&
+                   EqualityComparer<ContactEmailValueObject>.Default.Equals(ContactEmail, entity.ContactEmail) &&
+                   EqualityComparer<ContactPhoneValueObject>.Default.Equals(ContactPhone, entity.ContactPhone);
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(ContactName, ContactEmail, ContactPhone);
+        }
     }
 }
