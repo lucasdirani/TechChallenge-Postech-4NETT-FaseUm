@@ -3,28 +3,12 @@ using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Postech.PhaseOne.GroupEight.TechChallenge.Infra.Data.Contexts;
-using Testcontainers.PostgreSql;
 
 namespace Postech.PhaseOne.GroupEight.TechChallenge.IntegrationTests.Configurations.Factories
 {
-    public class ContactManagementAppWebApplicationFactory : WebApplicationFactory<Program>
+    public class ContactManagementAppWebApplicationFactory(string connectionString) : WebApplicationFactory<Program>
     {
-        private readonly PostgreSqlContainer _container;
-
-        public ContactManagementAppWebApplicationFactory()
-        {
-            _container = new PostgreSqlBuilder()
-                .WithDatabase("ContactManagementDB")
-                .WithUsername("admin")
-                .WithPassword("123456")
-                .WithPortBinding("5433", "5432")
-                .Build();
-        }
-
-        public async Task InitializeContainerAsync()
-        {
-            await _container.StartAsync();
-        }
+        public readonly string ConnectionString = connectionString;
 
         protected override void ConfigureWebHost(IWebHostBuilder builder)
         {
@@ -35,14 +19,17 @@ namespace Postech.PhaseOne.GroupEight.TechChallenge.IntegrationTests.Configurati
                 {
                     services.Remove(dbContextServiceDescriptor);
                 }
-                string connectionString = _container.GetConnectionString();
                 services.AddDbContext<ContactManagementDbContext>((provider, optionsBuilder) =>
                 {
-                    optionsBuilder.UseNpgsql(connectionString, npgsqlBuilder =>
+                    optionsBuilder.UseNpgsql(ConnectionString, npgsqlBuilder =>
                     {
                         npgsqlBuilder.EnableRetryOnFailure(3);
                     });
                 });
+                ServiceProvider serviceProvider = services.BuildServiceProvider();
+                using IServiceScope scope = serviceProvider.CreateScope();
+                ContactManagementDbContext db = scope.ServiceProvider.GetRequiredService<ContactManagementDbContext>();
+                db.Database.EnsureCreated();
             });
         }
     }
