@@ -105,16 +105,19 @@ app.MapDelete("/contacts", async (IMediator mediator, [FromBody] DeleteContactIn
 
 app.MapPut("/contacts", async (IMediator mediator, [FromBody] UpdateContactInput request) =>
 {
+    DomainException.ThrowWhenThereAreErrorMessages(request.Validate());
     return await mediator.Send(request);
 })
 .WithName("Update Contact")
 .WithMetadata(new SwaggerOperationAttribute
-                        ("Modify a contact in the Agenda",
-                        "Modifies a contact in the agenda according to the provided data"))
-.WithMetadata(new SwaggerParameterAttribute("Data of the new contact"))
+                        (
+    "Modify an existing contact",
+    "Modifies an existing contact according to the provided data")
+)
+.WithMetadata(new SwaggerParameterAttribute("Data for updating the contact"))
 .WithMetadata(new SwaggerResponseAttribute(200, "Contact updated"))
-.WithMetadata(new SwaggerResponseAttribute(400, "Invalid request"))
-.WithMetadata(new SwaggerResponseAttribute(500, "Unexpected error"))
+.WithMetadata(new SwaggerResponseAttribute(400, "The data provided to update the contact is invalid"))
+.WithMetadata(new SwaggerResponseAttribute(500, "Unexpected error while updating contact"))
 .WithOpenApi();
 app.Run();
 
