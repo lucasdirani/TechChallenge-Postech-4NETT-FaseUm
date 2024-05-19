@@ -1,6 +1,7 @@
 ﻿using Bogus;
 using FluentAssertions;
 using Moq;
+using Postech.PhaseOne.GroupEight.TechChallenge.Domain.Checkers.Interfaces;
 using Postech.PhaseOne.GroupEight.TechChallenge.Domain.Commands.Inputs;
 using Postech.PhaseOne.GroupEight.TechChallenge.Domain.Commands.Outputs;
 using Postech.PhaseOne.GroupEight.TechChallenge.Domain.Entities;
@@ -17,115 +18,101 @@ namespace Postech.PhaseOne.GroupEight.TechChallenge.UnitTests.Suite.Domain.Handl
     {
         private readonly Faker _faker = new("pt_BR");
 
-        [Fact(DisplayName = "Inserting a registered contact")]
+        [Fact(DisplayName = "Registering a new contact")]
         [Trait("Action", "Handle")]
-        public async Task Handle_InsertingContact_ShouldInsertContact()
+        public async Task Handle_NewContactRegistration_ShouldRegisterTheContact()
         {
             // Arrange
-            ContactNameValueObject registeredContactName = new(_faker.Name.FirstName(), _faker.Name.LastName());
-            ContactEmailValueObject registeredContactEmail = new(_faker.Internet.Email());
-            ContactPhoneValueObject registeredContactPhone = new(_faker.Phone.PhoneNumber("9########"), AreaCodeValueObject.Create("11"));
-            ContactEntity registeredContact = new(registeredContactName, registeredContactEmail, registeredContactPhone);
-            AddContactInput input = new()
+            AddContactInput addContactInput = new()
             {
                 
                 ContactFirstName = _faker.Name.FirstName(),
                 ContactLastName = _faker.Name.LastName(),
                 ContactEmail = _faker.Internet.Email(),
                 ContactPhoneNumber = _faker.Phone.PhoneNumber("9########"),
-                ContactPhoneNumberAreaCode = "12",
+                ContactPhoneNumberAreaCode = "11",
             };
-            Mock<IContactRepository> contactRepository = new();
-            contactRepository.Setup(c => c.InsertAsync(registeredContact));
-            contactRepository.Setup(c => c.SaveChangesAsync());
             Mock<IContactPhoneValueObjectFactory> contactPhoneFactory = new();
             contactPhoneFactory
-                .Setup(c => c.CreateAsync(input.ContactPhoneNumber, input.ContactPhoneNumberAreaCode))
-                .ReturnsAsync(new ContactPhoneValueObject(input.ContactPhoneNumber, 
-                    AreaCodeValueObject.Create(input.ContactPhoneNumberAreaCode)));
-            AddNewContactHandler handler = new(contactRepository.Object, contactPhoneFactory.Object);         
+                .Setup(c => c.CreateAsync(addContactInput.ContactPhoneNumber, addContactInput.ContactPhoneNumberAreaCode))
+                .ReturnsAsync(new ContactPhoneValueObject(addContactInput.ContactPhoneNumber, AreaCodeValueObject.Create(addContactInput.ContactPhoneNumberAreaCode)));
+            Mock<IRegisteredContactChecker> registeredContactChecker = new();
+            registeredContactChecker.Setup(r => r.CheckRegisteredContactAsync(It.Is<ContactEntity>(contact => contact != null))).ReturnsAsync(false);
+            Mock<IContactRepository> contactRepository = new();
+            contactRepository.Setup(c => c.InsertAsync(It.Is<ContactEntity>(contact => contact != null)));
+            contactRepository.Setup(c => c.SaveChangesAsync());
+            AddNewContactHandler handler = new(contactRepository.Object, contactPhoneFactory.Object, registeredContactChecker.Object);         
             
             // Act
-            DefaultOutput output = await handler.Handle(input, CancellationToken.None);
+            DefaultOutput output = await handler.Handle(addContactInput, CancellationToken.None);
 
             // Assert
             output.Success.Should().BeTrue();
             output.Message.Should().NotBeNullOrEmpty();
-          
+            output.Data.Should().NotBeNull();
         }
-
-        
-        [Theory(DisplayName = "Insert a registered contact with a new first name in an invalid format")]
+     
+        [Theory(DisplayName = "Register a contact with their first name in an invalid format")]
         [InlineData("")]
         [InlineData(" ")]
         [InlineData("B54no")]
         [InlineData("L!c?s")]
         [InlineData("Ta*tiana")]
         [Trait("Action", "Handle")]
-        public async Task Handle_InsertRegisteredContactWithNewFirstNameInAnInvalidFormat_ShouldThrowContactFirstNameException(string newInvalidFirstName)
+        public async Task Handle_RegisterContactWithFirstNameInAnInvalidFormat_ShouldThrowContactFirstNameException(string invalidFirstName)
         {
             // Arrange
-            ContactNameValueObject registeredContactName = new(_faker.Name.FirstName(), _faker.Name.LastName());
-            ContactEmailValueObject registeredContactEmail = new(_faker.Internet.Email());
-            ContactPhoneValueObject registeredContactPhone = new(_faker.Phone.PhoneNumber("9########"), AreaCodeValueObject.Create("11"));
-            ContactEntity registeredContact = new(registeredContactName, registeredContactEmail, registeredContactPhone);
-            AddContactInput input = new()
+            AddContactInput addContactInput = new()
             {
                 
-                ContactFirstName = newInvalidFirstName,
+                ContactFirstName = invalidFirstName,
                 ContactLastName = _faker.Name.LastName(),
                 ContactEmail = _faker.Internet.Email(),
                 ContactPhoneNumber = _faker.Phone.PhoneNumber("9########"),
                 ContactPhoneNumberAreaCode = "12",
             };
-            Mock<IContactRepository> contactRepository = new();
-            contactRepository.Setup(c => c.InsertAsync(registeredContact));
             Mock<IContactPhoneValueObjectFactory> contactPhoneFactory = new();
-            AddNewContactHandler handler = new(contactRepository.Object, contactPhoneFactory.Object);
+            Mock<IRegisteredContactChecker> registeredContactChecker = new();
+            Mock<IContactRepository> contactRepository = new();
+            AddNewContactHandler handler = new(contactRepository.Object, contactPhoneFactory.Object, registeredContactChecker.Object);
 
             // Assert
-            ContactFirstNameException exception = await Assert.ThrowsAsync<ContactFirstNameException>(() => handler.Handle(input, CancellationToken.None));
+            ContactFirstNameException exception = await Assert.ThrowsAsync<ContactFirstNameException>(() => handler.Handle(addContactInput, CancellationToken.None));
             exception.Message.Should().NotBeNullOrEmpty();
-            exception.FirstNameValue.Should().Be(newInvalidFirstName);            
+            exception.FirstNameValue.Should().Be(invalidFirstName);            
         }
 
-        [Theory(DisplayName = "Inserting a contact with a new last name in an invalid format")]
+        [Theory(DisplayName = "Register a contact with their last name in an invalid format")]
         [InlineData("")]
         [InlineData(" ")]
-        [InlineData("Jh!ffe?son")]
         [InlineData("[ontarroy@s")]
         [InlineData( "Lim,")]
         [InlineData("Silva ")]
         [InlineData("Alves Gom^s")]
         [Trait("Action", "Handle")]
-        public async Task Handle_InsertingContactWithNewLastNameInAnInvalidFormat_ShouldThrowContactLastNameException(string newInvalidLastName)
+        public async Task Handle_RegisterContactWithLastNameInAnInvalidFormat_ShouldThrowContactLastNameException(string invalidLastName)
         {
             // Arrange
-            ContactNameValueObject registeredContactName = new(_faker.Name.FirstName(), _faker.Name.LastName());
-            ContactEmailValueObject registeredContactEmail = new(_faker.Internet.Email());
-            ContactPhoneValueObject registeredContactPhone = new(_faker.Phone.PhoneNumber("9########"), AreaCodeValueObject.Create("11"));
-            ContactEntity registeredContact = new(registeredContactName, registeredContactEmail, registeredContactPhone);
-            AddContactInput input = new()
+            AddContactInput addContactInput = new()
             {            
                 ContactFirstName = _faker.Name.FirstName(),
-                ContactLastName = newInvalidLastName,
+                ContactLastName = invalidLastName,
                 ContactEmail = _faker.Internet.Email(),
                 ContactPhoneNumber = _faker.Phone.PhoneNumber("9########"),
                 ContactPhoneNumberAreaCode = "12",
             };
-            Mock<IContactRepository> contactRepository = new();
-            contactRepository.Setup(c => c.InsertAsync(registeredContact));
             Mock<IContactPhoneValueObjectFactory> contactPhoneFactory = new();
-            AddNewContactHandler handler = new(contactRepository.Object, contactPhoneFactory.Object);
+            Mock<IRegisteredContactChecker> registeredContactChecker = new();
+            Mock<IContactRepository> contactRepository = new();
+            AddNewContactHandler handler = new(contactRepository.Object, contactPhoneFactory.Object, registeredContactChecker.Object);
 
             // Assert
-            ContactLastNameException exception = await Assert.ThrowsAsync<ContactLastNameException>(() => handler.Handle(input, CancellationToken.None));
+            ContactLastNameException exception = await Assert.ThrowsAsync<ContactLastNameException>(() => handler.Handle(addContactInput, CancellationToken.None));
             exception.Message.Should().NotBeNullOrEmpty();
-            exception.LastNameValue.Should().Be(newInvalidLastName);
-            
+            exception.LastNameValue.Should().Be(invalidLastName);          
         }
 
-        [Theory(DisplayName = "Insert a registered contact with a new email address in an invalid format")]
+        [Theory(DisplayName = "Register a contact with their email address in an invalid format")]
         [InlineData("cleiton dias@gmail.com")]
         [InlineData("jair.raposo@")]
         [InlineData("milton.morgado4@hotmail")]
@@ -134,34 +121,29 @@ namespace Postech.PhaseOne.GroupEight.TechChallenge.UnitTests.Suite.Domain.Handl
         [InlineData("")]
         [InlineData(" ")]
         [Trait("Action", "Handle")]
-        public async Task Handle_InsertingContactWithEmailAddressInAnInvalidFormat_ShouldThrowContactEmailAddressException(string newInvalidEmailAddress)
+        public async Task Handle_RegisterContactWithEmailAddressInAnInvalidFormat_ShouldThrowContactEmailAddressException(string invalidEmailAddress)
         {
             // Arrange
-            ContactNameValueObject registeredContactName = new(_faker.Name.FirstName(), _faker.Name.LastName());
-            ContactEmailValueObject registeredContactEmail = new(_faker.Internet.Email());
-            ContactPhoneValueObject registeredContactPhone = new(_faker.Phone.PhoneNumber("9########"), AreaCodeValueObject.Create("11"));
-            ContactEntity registeredContact = new(registeredContactName, registeredContactEmail, registeredContactPhone);
-            AddContactInput input = new()
+            AddContactInput addContactInput = new()
             {            
                 ContactFirstName = _faker.Name.FirstName(),
                 ContactLastName = _faker.Name.LastName(),
-                ContactEmail = newInvalidEmailAddress,
+                ContactEmail = invalidEmailAddress,
                 ContactPhoneNumber = _faker.Phone.PhoneNumber("9########"),
                 ContactPhoneNumberAreaCode = "12",
             };
-            Mock<IContactRepository> contactRepository = new();
-            contactRepository.Setup(c => c.InsertAsync(registeredContact));
             Mock<IContactPhoneValueObjectFactory> contactPhoneFactory = new();
-            AddNewContactHandler handler = new(contactRepository.Object, contactPhoneFactory.Object);
+            Mock<IRegisteredContactChecker> registeredContactChecker = new();
+            Mock<IContactRepository> contactRepository = new();
+            AddNewContactHandler handler = new(contactRepository.Object, contactPhoneFactory.Object, registeredContactChecker.Object);
 
             // Assert
-            ContactEmailAddressException exception = await Assert.ThrowsAsync<ContactEmailAddressException>(() => handler.Handle(input, CancellationToken.None));
+            ContactEmailAddressException exception = await Assert.ThrowsAsync<ContactEmailAddressException>(() => handler.Handle(addContactInput, CancellationToken.None));
             exception.Message.Should().NotBeNullOrEmpty();
-            exception.EmailAddressValue.Should().Be(newInvalidEmailAddress);
-            
+            exception.EmailAddressValue.Should().Be(invalidEmailAddress);          
         }
 
-        [Theory(DisplayName = "Inserting contact with a phone number in an invalid format")]
+        [Theory(DisplayName = "Register a contact with their phone number in an invalid format")]
         [InlineData("0123456789")]
         [InlineData("1122334455")]
         [InlineData("9876543200")]
@@ -175,70 +157,58 @@ namespace Postech.PhaseOne.GroupEight.TechChallenge.UnitTests.Suite.Domain.Handl
         [InlineData("")]
         [InlineData(" ")]
         [Trait("Action", "Handle")]
-        public async Task Handle_InsertingContactWithNewPhoneNumberInAnInvalidFormat_ShouldThrowContactPhoneNumberException(string newInvalidPhoneNumber)
+        public async Task Handle_RegisterContactWithPhoneNumberInAnInvalidFormat_ShouldThrowContactPhoneNumberException(string invalidPhoneNumber)
         {
             // Arrange
-            ContactNameValueObject registeredContactName = new(_faker.Name.FirstName(), _faker.Name.LastName());
-            ContactEmailValueObject registeredContactEmail = new(_faker.Internet.Email());
-            ContactPhoneValueObject registeredContactPhone = new(_faker.Phone.PhoneNumber("9########"), AreaCodeValueObject.Create("11"));
-            ContactEntity registeredContact = new(registeredContactName, registeredContactEmail, registeredContactPhone);
-            AddContactInput input = new()
+            AddContactInput addContactInput = new()
             {
                 
                 ContactFirstName = _faker.Name.FirstName(),
                 ContactLastName = _faker.Name.LastName(),
                 ContactEmail = _faker.Internet.Email(),
-                ContactPhoneNumber = newInvalidPhoneNumber,
+                ContactPhoneNumber = invalidPhoneNumber,
                 ContactPhoneNumberAreaCode = "12",
             };
-            Mock<IContactRepository> contactRepository = new();
-            contactRepository.Setup(c => c.InsertAsync(registeredContact));
             Mock<IContactPhoneValueObjectFactory> contactPhoneFactory = new();
             contactPhoneFactory
-                .Setup(c => c.CreateAsync(input.ContactPhoneNumber, input.ContactPhoneNumberAreaCode))
-                .ThrowsAsync(new ContactPhoneNumberException("The phone number is invalid.", newInvalidPhoneNumber));
-            AddNewContactHandler handler = new(contactRepository.Object, contactPhoneFactory.Object);
+                .Setup(c => c.CreateAsync(addContactInput.ContactPhoneNumber, addContactInput.ContactPhoneNumberAreaCode))
+                .ThrowsAsync(new ContactPhoneNumberException("Phone number is in an invalid format", addContactInput.ContactPhoneNumber));
+            Mock<IRegisteredContactChecker> registeredContactChecker = new();
+            Mock<IContactRepository> contactRepository = new();
+            AddNewContactHandler handler = new(contactRepository.Object, contactPhoneFactory.Object, registeredContactChecker.Object);
 
             // Assert
-            ContactPhoneNumberException exception = await Assert.ThrowsAsync<ContactPhoneNumberException>(() => handler.Handle(input, CancellationToken.None));
+            ContactPhoneNumberException exception = await Assert.ThrowsAsync<ContactPhoneNumberException>(() => handler.Handle(addContactInput, CancellationToken.None));
             exception.Message.Should().NotBeNullOrEmpty();
-            exception.PhoneNumber.Should().Be(newInvalidPhoneNumber);
-            
+            exception.PhoneNumber.Should().Be(invalidPhoneNumber);         
         }
 
-        [Theory(DisplayName = "Inserting a registered contact with a new non existing area code")]
-        [InlineData("01")]
-        [InlineData("90")]
-        [InlineData("100")]
-        [InlineData("1000")]
+        [Fact(DisplayName = "Registering an existing contact")]
         [Trait("Action", "Handle")]
-        public async Task Handle_InsertingContactWithNonExistingAreaCode_ShouldThrowNotFoundException(string nonExistingAreaCode)
+        public async Task Handle_ContactAlreadyRegistered_ShouldThrowDomainException()
         {
             // Arrange
-            ContactNameValueObject registeredContactName = new(_faker.Name.FirstName(), _faker.Name.LastName());
-            ContactEmailValueObject registeredContactEmail = new(_faker.Internet.Email());
-            ContactPhoneValueObject registeredContactPhone = new(_faker.Phone.PhoneNumber("9########"), AreaCodeValueObject.Create("11"));
-            ContactEntity registeredContact = new(registeredContactName, registeredContactEmail, registeredContactPhone);
-            AddContactInput input = new()
-            {            
+            AddContactInput addContactInput = new()
+            {
+
                 ContactFirstName = _faker.Name.FirstName(),
                 ContactLastName = _faker.Name.LastName(),
                 ContactEmail = _faker.Internet.Email(),
                 ContactPhoneNumber = _faker.Phone.PhoneNumber("9########"),
-                ContactPhoneNumberAreaCode = nonExistingAreaCode,
+                ContactPhoneNumberAreaCode = "11",
             };
-            Mock<IContactRepository> contactRepository = new();
-            contactRepository.Setup(c => c.GetByIdAsync(registeredContact.Id)).ReturnsAsync(registeredContact);
             Mock<IContactPhoneValueObjectFactory> contactPhoneFactory = new();
             contactPhoneFactory
-                .Setup(c => c.CreateAsync(input.ContactPhoneNumber, input.ContactPhoneNumberAreaCode))
-                .ThrowsAsync(new NotFoundException("The area code was not found."));
-            AddNewContactHandler handler = new(contactRepository.Object, contactPhoneFactory.Object);
+                .Setup(c => c.CreateAsync(addContactInput.ContactPhoneNumber, addContactInput.ContactPhoneNumberAreaCode))
+                .ReturnsAsync(new ContactPhoneValueObject(addContactInput.ContactPhoneNumber, AreaCodeValueObject.Create(addContactInput.ContactPhoneNumberAreaCode)));
+            Mock<IRegisteredContactChecker> registeredContactChecker = new();
+            registeredContactChecker.Setup(r => r.CheckRegisteredContactAsync(It.Is<ContactEntity>(contact => contact != null))).ReturnsAsync(true);
+            Mock<IContactRepository> contactRepository = new();
+            AddNewContactHandler handler = new(contactRepository.Object, contactPhoneFactory.Object, registeredContactChecker.Object);
 
             // Assert
-            NotFoundException exception = await Assert.ThrowsAsync<NotFoundException>(() => handler.Handle(input, CancellationToken.None));
+            DomainException exception = await Assert.ThrowsAsync<DomainException>(() => handler.Handle(addContactInput, CancellationToken.None));
             exception.Message.Should().NotBeNullOrEmpty();
-            
         }
     }
 }
