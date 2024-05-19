@@ -49,7 +49,7 @@ namespace Postech.PhaseOne.GroupEight.TechChallenge.Domain.Commands.Inputs
         /// The new area code phone number of the contact.
         /// </summary>
         [Required(ErrorMessage = "The area code is required.")]
-        [StringLength(2, ErrorMessage = "The area code must contain 2 numeric characters.")]
+        [StringLength(2, MinimumLength = 2, ErrorMessage = "The area code must contain 2 numeric characters.")]
         public string ContactPhoneNumberAreaCode { get; init; }
 
         /// <summary>

@@ -121,7 +121,7 @@ app.MapPut("/contacts", async (IMediator mediator, [FromBody] UpdateContactInput
 .WithMetadata(new SwaggerResponseAttribute(500, "Unexpected error while updating contact"))
 .WithOpenApi();
 
-app.MapGet("/contacts", async (IMediator mediator, [FromBody] FindContactInput request) =>
+app.MapGet("/contacts", async (IMediator mediator, [AsParameters] FindContactInput request) =>
 {
     DomainException.ThrowWhenThereAreErrorMessages(request.Validate());
     return await mediator.Send(request);
