@@ -1,21 +1,19 @@
 ﻿using MediatR;
 using Postech.PhaseOne.GroupEight.TechChallenge.Domain.Commands.Outputs;
-using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics.CodeAnalysis;
-using System.Reflection;
 
 namespace Postech.PhaseOne.GroupEight.TechChallenge.Domain.Extensions
 {
-    //[ExcludeFromCodeCoverage]
+    [ExcludeFromCodeCoverage]
     public static class RequestValidatedExtensions
     {
-        public static IEnumerable<ValidationResult> Validadate(this IRequest<DefaultOutput> obj)
+        public static IEnumerable<ValidationResult> Validate(this IRequest<DefaultOutput> obj)
         {
-            var resultadoValidacao = new List<ValidationResult>();
-            var contexto = new ValidationContext(obj, null, null);
-            Validator.TryValidateObject(obj, contexto, resultadoValidacao, true);
-            return resultadoValidacao;
+            List<ValidationResult> validationResult = [];
+            ValidationContext validationContext = new(obj, null, null);
+            Validator.TryValidateObject(obj, validationContext, validationResult, true);
+            return validationResult;
         }
     }
 }
