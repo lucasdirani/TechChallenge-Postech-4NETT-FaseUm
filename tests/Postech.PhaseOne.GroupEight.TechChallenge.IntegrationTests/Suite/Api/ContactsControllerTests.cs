@@ -101,10 +101,7 @@ namespace Postech.PhaseOne.GroupEight.TechChallenge.IntegrationTests.Suite.Api
             FindContactInput findContactInput = new() { AreaCodeValue = areaCode.Value };
 
             // Act
-            using HttpResponseMessage responseMessage = await HttpClient.SendAsync(new HttpRequestMessage(HttpMethod.Get, "/contacts")
-            {
-                Content = new StringContent(JsonSerializer.Serialize(findContactInput), Encoding.UTF8, "application/json")
-            });
+            using HttpResponseMessage responseMessage = await HttpClient.SendAsync(new HttpRequestMessage(HttpMethod.Get, $"/contacts?areaCodeValue={findContactInput.AreaCodeValue}"));
 
             // Assert
             responseMessage.StatusCode.Should().Be(HttpStatusCode.OK);
