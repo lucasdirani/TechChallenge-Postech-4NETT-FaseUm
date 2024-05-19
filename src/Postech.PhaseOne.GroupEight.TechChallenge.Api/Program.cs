@@ -111,14 +111,35 @@ app.MapPut("/contacts", async (IMediator mediator, [FromBody] UpdateContactInput
 .WithName("Update Contact")
 .WithMetadata(new SwaggerOperationAttribute
                         (
-    "Modify an existing contact",
-    "Modifies an existing contact according to the provided data")
+        "Modify an existing contact",
+        "Modifies an existing contact according to the provided data"
+    )
 )
 .WithMetadata(new SwaggerParameterAttribute("Data for updating the contact"))
 .WithMetadata(new SwaggerResponseAttribute(200, "Contact updated"))
 .WithMetadata(new SwaggerResponseAttribute(400, "The data provided to update the contact is invalid"))
 .WithMetadata(new SwaggerResponseAttribute(500, "Unexpected error while updating contact"))
 .WithOpenApi();
+
+app.MapGet("/contacts", async (IMediator mediator, [FromBody] FindContactInput request) =>
+{
+    DomainException.ThrowWhenThereAreErrorMessages(request.Validate());
+    return await mediator.Send(request);
+})
+.WithName("Find Contact")
+.WithMetadata(new SwaggerOperationAttribute
+                        (
+        "Find contacts by area code",
+        "Returns registered contacts based on area code"
+    )
+)
+.WithMetadata(new SwaggerParameterAttribute("Data to find contacts based on area code"))
+.WithMetadata(new SwaggerResponseAttribute(200, "Contacts were found successfully"))
+.WithMetadata(new SwaggerResponseAttribute(400, "The data provided to find the contacts is invalid"))
+.WithMetadata(new SwaggerResponseAttribute(404, "No contacts found based on the area code provided"))
+.WithMetadata(new SwaggerResponseAttribute(500, "Unexpected error while finding the contacts"))
+.WithOpenApi();
+
 app.Run();
 
 public partial class Program

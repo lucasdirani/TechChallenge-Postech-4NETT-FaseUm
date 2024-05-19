@@ -43,6 +43,11 @@ namespace Postech.PhaseOne.GroupEight.TechChallenge.Infra.Data.Repositories
             return await _dbContext.ContactPhones.FirstOrDefaultAsync(contactPhone => contactPhone.Number == phoneNumber && contactPhone.AreaCode.Value == areaCodeValue);
         }
 
+        public async Task<IEnumerable<ContactEntity>> GetContactsByAreaCodeValueAsync(string areaCodeValue)
+        {
+            return await _dbContext.Contacts.Where(contact => contact.ContactPhone.AreaCode.Value == areaCodeValue && contact.Active).ToListAsync();
+        }
+
         public async Task InsertAsync(ContactEntity entity)
         {
             await _dbContext.Contacts.AddAsync(entity);

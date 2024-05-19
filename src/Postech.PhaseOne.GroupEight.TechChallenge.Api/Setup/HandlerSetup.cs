@@ -15,6 +15,7 @@ namespace Postech.PhaseOne.GroupEight.TechChallenge.Api.Setup
             services.AddScoped<IRequestHandler<AddContactInput, DefaultOutput>, AddNewContactHandler>();
             services.AddScoped<IRequestHandler<UpdateContactInput, DefaultOutput>, UpdateContactHandler>();
             services.AddScoped<IRequestHandler<DeleteContactInput, DefaultOutput>, DeleteContactHandler>();
+            services.AddScoped<IRequestHandler<FindContactInput, DefaultOutput>, FindContactByAreaCodeHandler>();
         }
     }
 }
