@@ -5,21 +5,18 @@ using Postech.PhaseOne.GroupEight.TechChallenge.Domain.Commands.Outputs;
 using Postech.PhaseOne.GroupEight.TechChallenge.Domain.Entities;
 using Postech.PhaseOne.GroupEight.TechChallenge.Domain.Interfaces.Repositories;
 using Postech.PhaseOne.GroupEight.TechChallenge.Domain.ValueObjects;
+using Postech.PhaseOne.GroupEight.TechChallenge.Domain.ViewModels;
 using Postech.PhaseOne.GroupEight.TechChallenge.IntegrationTests.Configurations.Base;
 using Postech.PhaseOne.GroupEight.TechChallenge.IntegrationTests.Fixtures;
 using System.Net;
 using System.Text;
 using System.Text.Json;
-using Newtonsoft.Json;
-using Postech.PhaseOne.GroupEight.TechChallenge.IntegrationTests.Helpers;
-using Postech.PhaseOne.GroupEight.TechChallenge.IntegrationTests.Helpers;
-using Postech.PhaseOne.GroupEight.TechChallenge.IntegrationTests.Helpers;
 
 namespace Postech.PhaseOne.GroupEight.TechChallenge.IntegrationTests.Suite.Api
 {
-        private readonly HttpClient _client = factory.CreateClient();
-
-        private readonly ContactManagementAppWebApplicationFactory _factory = factory;
+    [Collection("Integration Tests")]
+    public class ContactsControllerTests(IntegrationTestFixture fixture) : IntegrationTestBase(fixture)
+    {
         private readonly Faker _faker = new("pt_BR");
 
         [Theory(DisplayName = "Add an new contact with success")]
@@ -92,11 +89,43 @@ namespace Postech.PhaseOne.GroupEight.TechChallenge.IntegrationTests.Suite.Api
             responseMessage.StatusCode.Should().Be(HttpStatusCode.OK);
             DefaultOutput? responseMessageContent = JsonSerializer.Deserialize<DefaultOutput>(await responseMessage.Content.ReadAsStringAsync());
             responseMessageContent.Should().NotBeNull();
+            responseMessageContent?.Message.Should().NotBeNullOrEmpty();
+            responseMessageContent?.Success.Should().BeTrue();
+        }
+
+        [Fact]
+        public async Task FindContactEndpoint_FetchAnExistingContact_ShouldFindContact()
+        {
+            // Arrange
+            IContactRepository contactRepository = GetService<IContactRepository>();
+            ContactNameValueObject contactName = new(_faker.Name.FirstName(), _faker.Name.LastName());
+            ContactEmailValueObject contactEmail = new(_faker.Internet.Email());
+            AreaCodeValueObject areaCode = await contactRepository.GetAreaCodeByValueAsync("11");
+            ContactPhoneValueObject contactPhone = new(_faker.Phone.PhoneNumber("9########"), areaCode);
+            ContactEntity contactEntity = new(contactName, contactEmail, contactPhone);
+            await contactRepository.InsertAsync(contactEntity);
+            await contactRepository.SaveChangesAsync();
+            FindContactInput findContactInput = new() { AreaCodeValue = areaCode.Value };
+
+            // Act
+            using HttpResponseMessage responseMessage = await HttpClient.SendAsync(new HttpRequestMessage(HttpMethod.Get, "/contacts")
+            {
+                Content = new StringContent(JsonSerializer.Serialize(findContactInput), Encoding.UTF8, "application/json")
+            });
+
+            // Assert
+            responseMessage.StatusCode.Should().Be(HttpStatusCode.OK);
+            DefaultOutput? responseMessageContent = JsonSerializer.Deserialize<DefaultOutput>(await responseMessage.Content.ReadAsStringAsync());
+            responseMessageContent.Should().NotBeNull();
+            responseMessageContent?.Success.Should().BeTrue();
+            IEnumerable<FindContactByAreaCodeViewModel> responseMessageContentData = JsonSerializer.Deserialize<IEnumerable<FindContactByAreaCodeViewModel>>(responseMessageContent?.Data.ToString());
+            responseMessageContentData.Should().HaveCountGreaterThan(0);
+        }
 
         [Fact]
         [Trait("Action", "Contacts")]
         public async Task DeleteContactEndpoint_DeleteAnExistingContact_ShouldDeleteTheContact()
-        [Trait("Action", "Controller")]
+        {
             // Arrange
             IContactRepository contactRepository = GetService<IContactRepository>();
             ContactNameValueObject contactName = new(_faker.Name.FirstName(), _faker.Name.LastName());
@@ -110,12 +139,9 @@ namespace Postech.PhaseOne.GroupEight.TechChallenge.IntegrationTests.Suite.Api
 
             // Act
             using HttpResponseMessage responseMessage = await HttpClient.SendAsync(new HttpRequestMessage(HttpMethod.Delete, "/contacts")
-                string lastName, string email, string phone, string areaCode)
+            {
                 Content = new StringContent(JsonSerializer.Serialize(input), Encoding.UTF8, "application/json")
             });
-            var content = ContentHelper.GetStringContent(input);
-            var response = await _client.PostAsync("/contacts", content);
-            var result = JsonConvert.DeserializeObject<DefaultOutput>(response.Content.ReadAsStringAsync().Result);
 
             // Assert
             responseMessage.StatusCode.Should().Be(HttpStatusCode.OK);
