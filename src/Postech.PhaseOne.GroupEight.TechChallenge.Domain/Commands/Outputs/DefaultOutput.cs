@@ -3,17 +3,24 @@ using System.Text.Json.Serialization;
 
 namespace Postech.PhaseOne.GroupEight.TechChallenge.Domain.Commands.Outputs
 {
+    /// <summary>
+    /// Default return object from endpoints.
+    /// </summary>
     [ExcludeFromCodeCoverage]
     public record DefaultOutput
     {
-        public DefaultOutput()
-        {        
-        }
+        public DefaultOutput() {}
 
         public DefaultOutput(bool success, string message, object data) 
         {
             Success = success;
             Message = message; 
+            Data = data;
+        }
+
+        public DefaultOutput(bool success, object data)
+        {
+            Success = success;
             Data = data;
         }
 
