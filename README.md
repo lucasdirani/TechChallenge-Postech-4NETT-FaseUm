@@ -76,9 +76,9 @@ Tatiana Lima
 
 **## Contato**
 Para mais informações, entre em contato com os autores através de seus perfis no GitHub.
-Breno Jhefferson Gomes (link)
-Lucas Ruiz Dirani (link)
-Lucas Montarroyos (link)
-Ricardo Fulgencio Alves (link)
-Tatiana Lima (link)
+Breno Jhefferson Gomes - https://github.com/Brenojgomes
+Lucas Ruiz Dirani - https://github.com/lucasdirani
+Lucas Montarroyos Pinho - https://github.com/lucasmrpinho
+Ricardo Fulgencio Alves - https://github.com/rfulgencio3
+Tatiana Cardoso Lima - https://github.com/tatianacardosolima
  """
