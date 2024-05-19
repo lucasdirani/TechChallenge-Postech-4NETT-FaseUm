@@ -70,6 +70,7 @@ namespace Postech.PhaseOne.GroupEight.TechChallenge.Infra.Data.Configurations
                 .IsRequired()
                 .HasConstraintName("fk_tb_contact_phone_tb_contact");
             builder.HasIndex("ContactPhoneId").HasDatabaseName("ix_tb_contact_contact_phone_id");
+            builder.Navigation(c => c.ContactPhone).AutoInclude();
         }
     }
 }

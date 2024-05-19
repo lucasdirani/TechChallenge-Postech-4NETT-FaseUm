@@ -20,7 +20,7 @@ builder.Services.AddSwaggerGen(c =>
     { 
         Title = "ContactManagement API (Tech Challenge)", 
         Version = "v1", 
-        Description = "Alunos responsáveis: Breno Gomes, Lucas Pinho, Lucas Ruiz, Ricardo Fulgencio e Tatiana Lima"
+        Description = "Alunos responsÃ¡veis: Breno Gomes, Lucas Pinho, Lucas Ruiz, Ricardo Fulgencio e Tatiana Lima"
     });
     c.EnableAnnotations();
 });
@@ -103,6 +103,19 @@ app.MapDelete("/contacts", async (IMediator mediator, [FromBody] DeleteContactIn
 .WithMetadata(new SwaggerResponseAttribute(500, "Unexpected error while deleting contact"))
 .WithOpenApi();
 
+app.MapPut("/contacts", async (IMediator mediator, [FromBody] UpdateContactInput request) =>
+{
+    return await mediator.Send(request);
+})
+.WithName("Update Contact")
+.WithMetadata(new SwaggerOperationAttribute
+                        ("Modify a contact in the Agenda",
+                        "Modifies a contact in the agenda according to the provided data"))
+.WithMetadata(new SwaggerParameterAttribute("Data of the new contact"))
+.WithMetadata(new SwaggerResponseAttribute(200, "Contact updated"))
+.WithMetadata(new SwaggerResponseAttribute(400, "Invalid request"))
+.WithMetadata(new SwaggerResponseAttribute(500, "Unexpected error"))
+.WithOpenApi();
 app.Run();
 
 public partial class Program
