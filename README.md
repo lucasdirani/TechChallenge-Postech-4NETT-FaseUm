@@ -1,7 +1,9 @@
 **# Postech.PhaseOne.GroupEight.TechChallenge**
 
 **## Descrição**
-Este projeto é uma API mínima (Minimal API) que inclui funcionalidades para gerenciamento de contatos. Ele está dividido em várias camadas para facilitar a organização e a manutenção do código.
+Este projeto é uma API mínima (Minimal API) que inclui funcionalidades para gerenciamento de contatos desenvolvido para o TechChallenge - Fase 1 da Pós-Tech FIAP para o curso de ARQUITETURA DE SISTEMAS .NET COM AZURE.
+
+Ele está dividido em várias camadas para facilitar a organização e a manutenção do código.
 
 **## Funcionalidades**
 - Registrar contatos via endpoint `/contacts`.
@@ -26,32 +28,23 @@ O projeto está dividido nos seguintes subprojetos:
 - Visual Studio 2022 ou superior / Visual Studio Code
 - SQL Server (ou outro banco de dados configurado no `appsettings.json`)
 
-**## Instalação**
-1. Clone o repositório:
-   ```bash
+**## Instalação e Execução do Projeto**
+1. Clone o repositório
    git clone https://github.com/lucasdirani/TechChallenge-Postech-4NETT-FaseUm.git
-Navegue até o diretório do projeto:
 
-bash
-Always show details
+2. Navegue até o diretório do projeto:
+  cd TechChallenge-Postech-4NETT-FaseUm
 
-cd TechChallenge-Postech-4NETT-FaseUm
-Restaure as dependências do projeto:
+3. Restaure as dependências do projeto:
+  dotnet restore
 
-bash
-Always show details
-
-dotnet restore
-Execute o projeto:
-
-bash
-Always show details
-
-dotnet run --project src/Postech.PhaseOne.GroupEight.TechChallenge.Api
+4. Execute o projeto:
+  dotnet run --project src/Postech.PhaseOne.GroupEight.TechChallenge.Api
 
 **## Uso**
 Para registrar um novo contato, faça uma requisição POST para o endpoint /contacts com um corpo de requisição no seguinte formato:
 
+Request:
 {
   "name": "Nome do Contato",
   "email": "email@exemplo.com",
@@ -81,4 +74,4 @@ Lucas Ruiz Dirani - https://github.com/lucasdirani
 Lucas Montarroyos Pinho - https://github.com/lucasmrpinho
 Ricardo Fulgencio Alves - https://github.com/rfulgencio3
 Tatiana Cardoso Lima - https://github.com/tatianacardosolima
- """
+
