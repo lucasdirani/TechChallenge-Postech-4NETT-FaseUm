@@ -32,5 +32,18 @@ namespace Postech.PhaseOne.GroupEight.TechChallenge.Domain.ValueObjects
         {
             return FirstName != otherFirstName || LastName != otherLastName;
         }
+
+        public virtual bool Equals(ContactNameValueObject? other)
+        {
+            if (ReferenceEquals(this, other)) return true;
+            if (other is null) return false;
+            return string.Equals(FirstName, other.FirstName, StringComparison.OrdinalIgnoreCase)
+                && string.Equals(LastName, other.LastName, StringComparison.OrdinalIgnoreCase);
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(FirstName, LastName);
+        }
     }
 }
