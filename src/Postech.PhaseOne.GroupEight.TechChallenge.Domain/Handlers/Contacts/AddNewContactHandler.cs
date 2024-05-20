@@ -5,6 +5,7 @@ using Postech.PhaseOne.GroupEight.TechChallenge.Domain.Commands.Outputs;
 using Postech.PhaseOne.GroupEight.TechChallenge.Domain.Entities;
 using Postech.PhaseOne.GroupEight.TechChallenge.Domain.Exceptions.Common;
 using Postech.PhaseOne.GroupEight.TechChallenge.Domain.Exceptions.ValueObjects;
+using Postech.PhaseOne.GroupEight.TechChallenge.Domain.Extensions;
 using Postech.PhaseOne.GroupEight.TechChallenge.Domain.Factories.Interfaces;
 using Postech.PhaseOne.GroupEight.TechChallenge.Domain.Interfaces.Repositories;
 using Postech.PhaseOne.GroupEight.TechChallenge.Domain.ValueObjects;
@@ -49,7 +50,7 @@ namespace Postech.PhaseOne.GroupEight.TechChallenge.Domain.Handlers.Contacts
             DomainException.ThrowWhen(isContactRegistered, "The contact is already registered.");
             await _contactRepository.InsertAsync(contact);
             await _contactRepository.SaveChangesAsync();
-            return new DefaultOutput(true, "The contact was registered successfully.", contact);
+            return new DefaultOutput(true, "The contact was registered successfully.", contact.AsAddNewContactViewModel());
         }
     }
 }
