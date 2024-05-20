@@ -27,7 +27,7 @@ namespace Postech.PhaseOne.GroupEight.TechChallenge.Domain.Handlers.Contacts
         {
             IEnumerable<ContactEntity> contacts = await _contactRepository.GetContactsByAreaCodeValueAsync(request.AreaCodeValue);
             NotFoundException.ThrowWhenNullOrEmptyList(contacts, "No contacts found for the area code provided");
-            return new DefaultOutput(true, contacts.AsFindContactByAreaCodeViewModel());
+            return new DefaultOutput(true, "The contacts were found successfully.", contacts.AsFindContactByAreaCodeViewModel());
         }
     }
 }
