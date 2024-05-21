@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using Postech.PhaseOne.GroupEight.TechChallenge.Domain.Commands.Outputs;
+using Postech.PhaseOne.GroupEight.TechChallenge.Domain.ViewModels;
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics.CodeAnalysis;
 
@@ -9,7 +10,7 @@ namespace Postech.PhaseOne.GroupEight.TechChallenge.Domain.Commands.Inputs
     /// Object that stores the register data for a contact.
     /// </summary>
     [ExcludeFromCodeCoverage]
-    public class AddContactInput : IRequest<DefaultOutput>
+    public class AddContactInput : IRequest<DefaultOutput<AddNewContactViewModel>>
     {
         /// <summary>
         /// The first name of the contact.

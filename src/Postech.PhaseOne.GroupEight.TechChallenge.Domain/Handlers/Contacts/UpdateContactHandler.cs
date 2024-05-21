@@ -8,6 +8,7 @@ using Postech.PhaseOne.GroupEight.TechChallenge.Domain.Exceptions.ValueObjects;
 using Postech.PhaseOne.GroupEight.TechChallenge.Domain.Extensions;
 using Postech.PhaseOne.GroupEight.TechChallenge.Domain.Factories.Interfaces;
 using Postech.PhaseOne.GroupEight.TechChallenge.Domain.Interfaces.Repositories;
+using Postech.PhaseOne.GroupEight.TechChallenge.Domain.ViewModels;
 
 namespace Postech.PhaseOne.GroupEight.TechChallenge.Domain.Handlers.Contacts
 {
@@ -21,7 +22,7 @@ namespace Postech.PhaseOne.GroupEight.TechChallenge.Domain.Handlers.Contacts
         IContactRepository contactRepository, 
         IContactPhoneValueObjectFactory contactPhoneFactory,
         IRegisteredContactChecker registeredContactChecker) 
-        : IRequestHandler<UpdateContactInput, DefaultOutput>
+        : IRequestHandler<UpdateContactInput, DefaultOutput<UpdateContactViewModel>>
     {
         private readonly IContactRepository _contactRepository = contactRepository;
         private readonly IContactPhoneValueObjectFactory _contactPhoneFactory = contactPhoneFactory;
@@ -39,7 +40,7 @@ namespace Postech.PhaseOne.GroupEight.TechChallenge.Domain.Handlers.Contacts
         /// <exception cref="ContactLastNameException">The new last name provided for the contact is in an invalid format.</exception>
         /// <exception cref="ContactEmailAddressException">The new email address provided for the contact is in an invalid format.</exception>
         /// <exception cref="ContactPhoneNumberException">The new phone number provided for the contact is in an invalid format.</exception>
-        public async Task<DefaultOutput> Handle(UpdateContactInput request, CancellationToken cancellationToken)
+        public async Task<DefaultOutput<UpdateContactViewModel>> Handle(UpdateContactInput request, CancellationToken cancellationToken)
         {
             ContactEntity? contact = await _contactRepository.GetByIdAsync(request.ContactId);
             NotFoundException.ThrowWhenNullEntity(contact, "Contact could not be found");
@@ -51,7 +52,7 @@ namespace Postech.PhaseOne.GroupEight.TechChallenge.Domain.Handlers.Contacts
             DomainException.ThrowWhen(isContactRegistered, "Contact already registered.");
             _contactRepository.Update(contact);
             await _contactRepository.SaveChangesAsync();
-            return new DefaultOutput(true, "The contact was successfully updated", contact.AsUpdateContactViewModel());
+            return new DefaultOutput<UpdateContactViewModel>(true, "The contact was successfully updated", contact.AsUpdateContactViewModel());
         }
     }
 }

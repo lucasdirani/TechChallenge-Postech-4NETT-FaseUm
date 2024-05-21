@@ -9,6 +9,7 @@ using Postech.PhaseOne.GroupEight.TechChallenge.Domain.Extensions;
 using Postech.PhaseOne.GroupEight.TechChallenge.Domain.Factories.Interfaces;
 using Postech.PhaseOne.GroupEight.TechChallenge.Domain.Interfaces.Repositories;
 using Postech.PhaseOne.GroupEight.TechChallenge.Domain.ValueObjects;
+using Postech.PhaseOne.GroupEight.TechChallenge.Domain.ViewModels;
 
 namespace Postech.PhaseOne.GroupEight.TechChallenge.Domain.Handlers.Contacts
 {
@@ -22,7 +23,7 @@ namespace Postech.PhaseOne.GroupEight.TechChallenge.Domain.Handlers.Contacts
         IContactRepository contactRepository, 
         IContactPhoneValueObjectFactory contactPhoneFactory, 
         IRegisteredContactChecker registeredContactChecker) 
-        : IRequestHandler<AddContactInput, DefaultOutput>
+        : IRequestHandler<AddContactInput, DefaultOutput<AddNewContactViewModel>>
     {
         private readonly IContactRepository _contactRepository = contactRepository;
         private readonly IContactPhoneValueObjectFactory _contactPhoneFactory = contactPhoneFactory;
@@ -40,7 +41,7 @@ namespace Postech.PhaseOne.GroupEight.TechChallenge.Domain.Handlers.Contacts
         /// <exception cref="ContactPhoneNumberException">The phone number provided for the contact is in an invalid format.</exception>
         /// <exception cref="DomainException">The contact is already registered.</exception>
         /// <exception cref="NotFoundException">The provided area code was not found.</exception>
-        public async Task<DefaultOutput> Handle(AddContactInput request, CancellationToken cancellationToken)
+        public async Task<DefaultOutput<AddNewContactViewModel>> Handle(AddContactInput request, CancellationToken cancellationToken)
         {       
             ContactNameValueObject contactName = new(request.ContactFirstName, request.ContactLastName);
             ContactEmailValueObject contactEmail = new(request.ContactEmail);
@@ -50,7 +51,7 @@ namespace Postech.PhaseOne.GroupEight.TechChallenge.Domain.Handlers.Contacts
             DomainException.ThrowWhen(isContactRegistered, "The contact is already registered.");
             await _contactRepository.InsertAsync(contact);
             await _contactRepository.SaveChangesAsync();
-            return new DefaultOutput(true, "The contact was registered successfully.", contact.AsAddNewContactViewModel());
+            return new DefaultOutput<AddNewContactViewModel>(true, "The contact was registered successfully.", contact.AsAddNewContactViewModel());
         }
     }
 }

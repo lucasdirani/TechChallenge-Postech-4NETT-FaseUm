@@ -11,6 +11,7 @@ using Postech.PhaseOne.GroupEight.TechChallenge.Domain.Factories.Interfaces;
 using Postech.PhaseOne.GroupEight.TechChallenge.Domain.Handlers.Contacts;
 using Postech.PhaseOne.GroupEight.TechChallenge.Domain.Interfaces.Repositories;
 using Postech.PhaseOne.GroupEight.TechChallenge.Domain.ValueObjects;
+using Postech.PhaseOne.GroupEight.TechChallenge.Domain.ViewModels;
 
 namespace Postech.PhaseOne.GroupEight.TechChallenge.UnitTests.Suite.Domain.Handlers.Contacts
 {
@@ -48,7 +49,7 @@ namespace Postech.PhaseOne.GroupEight.TechChallenge.UnitTests.Suite.Domain.Handl
             UpdateContactHandler handler = new(contactRepository.Object, contactPhoneFactory.Object, registeredContactChecker.Object);         
             
             // Act
-            DefaultOutput output = await handler.Handle(updateContactInput, CancellationToken.None);
+            DefaultOutput<UpdateContactViewModel> output = await handler.Handle(updateContactInput, CancellationToken.None);
 
             // Assert
             output.Success.Should().BeTrue();

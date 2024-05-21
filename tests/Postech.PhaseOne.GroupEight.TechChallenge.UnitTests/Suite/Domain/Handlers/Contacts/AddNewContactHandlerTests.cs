@@ -11,6 +11,7 @@ using Postech.PhaseOne.GroupEight.TechChallenge.Domain.Factories.Interfaces;
 using Postech.PhaseOne.GroupEight.TechChallenge.Domain.Handlers.Contacts;
 using Postech.PhaseOne.GroupEight.TechChallenge.Domain.Interfaces.Repositories;
 using Postech.PhaseOne.GroupEight.TechChallenge.Domain.ValueObjects;
+using Postech.PhaseOne.GroupEight.TechChallenge.Domain.ViewModels;
 
 namespace Postech.PhaseOne.GroupEight.TechChallenge.UnitTests.Suite.Domain.Handlers.Contacts
 {
@@ -41,10 +42,10 @@ namespace Postech.PhaseOne.GroupEight.TechChallenge.UnitTests.Suite.Domain.Handl
             Mock<IContactRepository> contactRepository = new();
             contactRepository.Setup(c => c.InsertAsync(It.Is<ContactEntity>(contact => contact != null)));
             contactRepository.Setup(c => c.SaveChangesAsync());
-            AddNewContactHandler handler = new(contactRepository.Object, contactPhoneFactory.Object, registeredContactChecker.Object);         
-            
+            AddNewContactHandler handler = new(contactRepository.Object, contactPhoneFactory.Object, registeredContactChecker.Object);
+
             // Act
-            DefaultOutput output = await handler.Handle(addContactInput, CancellationToken.None);
+            DefaultOutput<AddNewContactViewModel> output = await handler.Handle(addContactInput, CancellationToken.None);
 
             // Assert
             output.Success.Should().BeTrue();

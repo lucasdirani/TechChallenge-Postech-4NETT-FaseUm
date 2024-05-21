@@ -28,7 +28,7 @@ namespace Postech.PhaseOne.GroupEight.TechChallenge.UnitTests.Suite.Domain.Handl
             FindContactInput input = new() { AreaCodeValue = areaCode };
 
             // Act
-            DefaultOutput output = await handler.Handle(input, CancellationToken.None);
+            DefaultOutput<IEnumerable<FindContactByAreaCodeViewModel>> output = await handler.Handle(input, CancellationToken.None);
 
             // Assert
             output.Success.Should().Be(true);
