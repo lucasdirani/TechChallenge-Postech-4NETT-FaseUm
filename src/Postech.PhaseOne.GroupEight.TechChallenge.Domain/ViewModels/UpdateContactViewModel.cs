@@ -4,10 +4,10 @@ using System.Text.Json.Serialization;
 namespace Postech.PhaseOne.GroupEight.TechChallenge.Domain.ViewModels
 {
     /// <summary>
-    /// Object that stores data returned from the find contact endpoint.
+    /// Object that stores data returned from the update contact endpoint.
     /// </summary>
     [ExcludeFromCodeCoverage]
-    public record FindContactByAreaCodeViewModel
+    public record UpdateContactViewModel
     {
         /// <summary>
         /// The identification of the contact.
@@ -44,5 +44,11 @@ namespace Postech.PhaseOne.GroupEight.TechChallenge.Domain.ViewModels
         /// </summary>
         [JsonPropertyName("contactPhoneAreaCode")]
         public string ContactPhoneAreaCode { get; init; }
+
+        /// <summary>
+        /// Indicator if the contact is active.
+        /// </summary>
+        [JsonPropertyName("isActive")]
+        public bool IsActive { get; init; }
     }
 }

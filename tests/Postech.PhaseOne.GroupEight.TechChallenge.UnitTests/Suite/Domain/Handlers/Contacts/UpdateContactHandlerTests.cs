@@ -1,6 +1,7 @@
 ﻿using Bogus;
 using FluentAssertions;
 using Moq;
+using Postech.PhaseOne.GroupEight.TechChallenge.Domain.Checkers.Interfaces;
 using Postech.PhaseOne.GroupEight.TechChallenge.Domain.Commands.Inputs;
 using Postech.PhaseOne.GroupEight.TechChallenge.Domain.Commands.Outputs;
 using Postech.PhaseOne.GroupEight.TechChallenge.Domain.Entities;
@@ -10,6 +11,7 @@ using Postech.PhaseOne.GroupEight.TechChallenge.Domain.Factories.Interfaces;
 using Postech.PhaseOne.GroupEight.TechChallenge.Domain.Handlers.Contacts;
 using Postech.PhaseOne.GroupEight.TechChallenge.Domain.Interfaces.Repositories;
 using Postech.PhaseOne.GroupEight.TechChallenge.Domain.ValueObjects;
+using Postech.PhaseOne.GroupEight.TechChallenge.Domain.ViewModels;
 
 namespace Postech.PhaseOne.GroupEight.TechChallenge.UnitTests.Suite.Domain.Handlers.Contacts
 {
@@ -26,7 +28,7 @@ namespace Postech.PhaseOne.GroupEight.TechChallenge.UnitTests.Suite.Domain.Handl
             ContactEmailValueObject registeredContactEmail = new(_faker.Internet.Email());
             ContactPhoneValueObject registeredContactPhone = new(_faker.Phone.PhoneNumber("9########"), AreaCodeValueObject.Create("11"));
             ContactEntity registeredContact = new(registeredContactName, registeredContactEmail, registeredContactPhone);
-            UpdateContactInput input = new()
+            UpdateContactInput updateContactInput = new()
             {
                 ContactId = registeredContact.Id,
                 ContactFirstName = _faker.Name.FirstName(),
@@ -38,23 +40,25 @@ namespace Postech.PhaseOne.GroupEight.TechChallenge.UnitTests.Suite.Domain.Handl
             Mock<IContactRepository> contactRepository = new();
             contactRepository.Setup(c => c.GetByIdAsync(registeredContact.Id)).ReturnsAsync(registeredContact);
             contactRepository.Setup(c => c.SaveChangesAsync());
+            Mock<IRegisteredContactChecker> registeredContactChecker = new();
+            registeredContactChecker.Setup(r => r.CheckRegisteredContactAsync(It.Is<ContactEntity>(contact => contact != null))).ReturnsAsync(false);
             Mock<IContactPhoneValueObjectFactory> contactPhoneFactory = new();
             contactPhoneFactory
-                .Setup(c => c.CreateAsync(input.ContactPhoneNumber, input.ContactPhoneNumberAreaCode))
-                .ReturnsAsync(new ContactPhoneValueObject(input.ContactPhoneNumber, AreaCodeValueObject.Create(input.ContactPhoneNumberAreaCode)));
-            UpdateContactHandler handler = new(contactRepository.Object, contactPhoneFactory.Object);         
+                .Setup(c => c.CreateAsync(updateContactInput.ContactPhoneNumber, updateContactInput.ContactPhoneNumberAreaCode))
+                .ReturnsAsync(new ContactPhoneValueObject(updateContactInput.ContactPhoneNumber, AreaCodeValueObject.Create(updateContactInput.ContactPhoneNumberAreaCode)));
+            UpdateContactHandler handler = new(contactRepository.Object, contactPhoneFactory.Object, registeredContactChecker.Object);         
             
             // Act
-            DefaultOutput output = await handler.Handle(input, CancellationToken.None);
+            DefaultOutput<UpdateContactViewModel> output = await handler.Handle(updateContactInput, CancellationToken.None);
 
             // Assert
             output.Success.Should().BeTrue();
             output.Message.Should().NotBeNullOrEmpty();
-            registeredContact.ContactName.FirstName.Should().Be(input.ContactFirstName);
-            registeredContact.ContactName.LastName.Should().Be(input.ContactLastName);
-            registeredContact.ContactEmail.Value.Should().Be(input.ContactEmail); 
-            registeredContact.ContactPhone.Number.Should().Be(input.ContactPhoneNumber); 
-            registeredContact.ContactPhone.AreaCode.Value.Should().Be(input.ContactPhoneNumberAreaCode); 
+            registeredContact.ContactName.FirstName.Should().Be(updateContactInput.ContactFirstName);
+            registeredContact.ContactName.LastName.Should().Be(updateContactInput.ContactLastName);
+            registeredContact.ContactEmail.Value.Should().Be(updateContactInput.ContactEmail); 
+            registeredContact.ContactPhone.Number.Should().Be(updateContactInput.ContactPhoneNumber); 
+            registeredContact.ContactPhone.AreaCode.Value.Should().Be(updateContactInput.ContactPhoneNumberAreaCode); 
             registeredContact.ModifiedAt.Should().BeOnOrBefore(DateTime.UtcNow);
             contactRepository.Verify(c => c.GetByIdAsync(registeredContact.Id), Times.Once());
             contactRepository.Verify(c => c.Update(registeredContact), Times.Once());
@@ -70,8 +74,9 @@ namespace Postech.PhaseOne.GroupEight.TechChallenge.UnitTests.Suite.Domain.Handl
             Mock<IContactRepository> contactRepository = new();
             contactRepository.Setup(c => c.GetByIdAsync(contactIdThatWillBeUpdated)).ReturnsAsync(() => null);
             Mock<IContactPhoneValueObjectFactory> contactPhoneFactory = new();
-            UpdateContactHandler handler = new(contactRepository.Object, contactPhoneFactory.Object);
-            UpdateContactInput input = new()
+            Mock<IRegisteredContactChecker> registeredContactChecker = new();
+            UpdateContactHandler handler = new(contactRepository.Object, contactPhoneFactory.Object, registeredContactChecker.Object);
+            UpdateContactInput updateContactInput = new()
             {
                 ContactId = contactIdThatWillBeUpdated,
                 ContactFirstName = _faker.Name.FirstName(),
@@ -82,7 +87,7 @@ namespace Postech.PhaseOne.GroupEight.TechChallenge.UnitTests.Suite.Domain.Handl
             };
 
             // Assert
-            NotFoundException exception = await Assert.ThrowsAsync<NotFoundException>(() => handler.Handle(input, CancellationToken.None));
+            NotFoundException exception = await Assert.ThrowsAsync<NotFoundException>(() => handler.Handle(updateContactInput, CancellationToken.None));
             exception.Message.Should().NotBeNullOrEmpty();
             contactRepository.Verify(c => c.GetByIdAsync(contactIdThatWillBeUpdated), Times.Once());
             contactRepository.Verify(c => c.Update(It.Is<ContactEntity>(entity => entity != null)), Times.Never());
@@ -103,7 +108,7 @@ namespace Postech.PhaseOne.GroupEight.TechChallenge.UnitTests.Suite.Domain.Handl
             ContactEmailValueObject registeredContactEmail = new(_faker.Internet.Email());
             ContactPhoneValueObject registeredContactPhone = new(_faker.Phone.PhoneNumber("9########"), AreaCodeValueObject.Create("11"));
             ContactEntity registeredContact = new(registeredContactName, registeredContactEmail, registeredContactPhone);
-            UpdateContactInput input = new()
+            UpdateContactInput updateContactInput = new()
             {
                 ContactId = registeredContact.Id,
                 ContactFirstName = newInvalidFirstName,
@@ -114,11 +119,13 @@ namespace Postech.PhaseOne.GroupEight.TechChallenge.UnitTests.Suite.Domain.Handl
             };
             Mock<IContactRepository> contactRepository = new();
             contactRepository.Setup(c => c.GetByIdAsync(registeredContact.Id)).ReturnsAsync(registeredContact);
+            Mock<IRegisteredContactChecker> registeredContactChecker = new();
+            registeredContactChecker.Setup(r => r.CheckRegisteredContactAsync(It.Is<ContactEntity>(contact => contact != null))).ReturnsAsync(false);
             Mock<IContactPhoneValueObjectFactory> contactPhoneFactory = new();
-            UpdateContactHandler handler = new(contactRepository.Object, contactPhoneFactory.Object);
+            UpdateContactHandler handler = new(contactRepository.Object, contactPhoneFactory.Object, registeredContactChecker.Object);
 
             // Assert
-            ContactFirstNameException exception = await Assert.ThrowsAsync<ContactFirstNameException>(() => handler.Handle(input, CancellationToken.None));
+            ContactFirstNameException exception = await Assert.ThrowsAsync<ContactFirstNameException>(() => handler.Handle(updateContactInput, CancellationToken.None));
             exception.Message.Should().NotBeNullOrEmpty();
             exception.FirstNameValue.Should().Be(newInvalidFirstName);
             contactRepository.Verify(c => c.GetByIdAsync(registeredContact.Id), Times.Once());
@@ -142,7 +149,7 @@ namespace Postech.PhaseOne.GroupEight.TechChallenge.UnitTests.Suite.Domain.Handl
             ContactEmailValueObject registeredContactEmail = new(_faker.Internet.Email());
             ContactPhoneValueObject registeredContactPhone = new(_faker.Phone.PhoneNumber("9########"), AreaCodeValueObject.Create("11"));
             ContactEntity registeredContact = new(registeredContactName, registeredContactEmail, registeredContactPhone);
-            UpdateContactInput input = new()
+            UpdateContactInput updateContactInput = new()
             {
                 ContactId = registeredContact.Id,
                 ContactFirstName = _faker.Name.FirstName(),
@@ -153,11 +160,13 @@ namespace Postech.PhaseOne.GroupEight.TechChallenge.UnitTests.Suite.Domain.Handl
             };
             Mock<IContactRepository> contactRepository = new();
             contactRepository.Setup(c => c.GetByIdAsync(registeredContact.Id)).ReturnsAsync(registeredContact);
+            Mock<IRegisteredContactChecker> registeredContactChecker = new();
+            registeredContactChecker.Setup(r => r.CheckRegisteredContactAsync(It.Is<ContactEntity>(contact => contact != null))).ReturnsAsync(false);
             Mock<IContactPhoneValueObjectFactory> contactPhoneFactory = new();
-            UpdateContactHandler handler = new(contactRepository.Object, contactPhoneFactory.Object);
+            UpdateContactHandler handler = new(contactRepository.Object, contactPhoneFactory.Object, registeredContactChecker.Object);
 
             // Assert
-            ContactLastNameException exception = await Assert.ThrowsAsync<ContactLastNameException>(() => handler.Handle(input, CancellationToken.None));
+            ContactLastNameException exception = await Assert.ThrowsAsync<ContactLastNameException>(() => handler.Handle(updateContactInput, CancellationToken.None));
             exception.Message.Should().NotBeNullOrEmpty();
             exception.LastNameValue.Should().Be(newInvalidLastName);
             contactRepository.Verify(c => c.GetByIdAsync(registeredContact.Id), Times.Once());
@@ -181,7 +190,7 @@ namespace Postech.PhaseOne.GroupEight.TechChallenge.UnitTests.Suite.Domain.Handl
             ContactEmailValueObject registeredContactEmail = new(_faker.Internet.Email());
             ContactPhoneValueObject registeredContactPhone = new(_faker.Phone.PhoneNumber("9########"), AreaCodeValueObject.Create("11"));
             ContactEntity registeredContact = new(registeredContactName, registeredContactEmail, registeredContactPhone);
-            UpdateContactInput input = new()
+            UpdateContactInput updateContactInput = new()
             {
                 ContactId = registeredContact.Id,
                 ContactFirstName = _faker.Name.FirstName(),
@@ -193,10 +202,12 @@ namespace Postech.PhaseOne.GroupEight.TechChallenge.UnitTests.Suite.Domain.Handl
             Mock<IContactRepository> contactRepository = new();
             contactRepository.Setup(c => c.GetByIdAsync(registeredContact.Id)).ReturnsAsync(registeredContact);
             Mock<IContactPhoneValueObjectFactory> contactPhoneFactory = new();
-            UpdateContactHandler handler = new(contactRepository.Object, contactPhoneFactory.Object);
+            Mock<IRegisteredContactChecker> registeredContactChecker = new();
+            registeredContactChecker.Setup(r => r.CheckRegisteredContactAsync(It.Is<ContactEntity>(contact => contact != null))).ReturnsAsync(false);
+            UpdateContactHandler handler = new(contactRepository.Object, contactPhoneFactory.Object, registeredContactChecker.Object);
 
             // Assert
-            ContactEmailAddressException exception = await Assert.ThrowsAsync<ContactEmailAddressException>(() => handler.Handle(input, CancellationToken.None));
+            ContactEmailAddressException exception = await Assert.ThrowsAsync<ContactEmailAddressException>(() => handler.Handle(updateContactInput, CancellationToken.None));
             exception.Message.Should().NotBeNullOrEmpty();
             exception.EmailAddressValue.Should().Be(newInvalidEmailAddress);
             contactRepository.Verify(c => c.GetByIdAsync(registeredContact.Id), Times.Once());
@@ -225,7 +236,7 @@ namespace Postech.PhaseOne.GroupEight.TechChallenge.UnitTests.Suite.Domain.Handl
             ContactEmailValueObject registeredContactEmail = new(_faker.Internet.Email());
             ContactPhoneValueObject registeredContactPhone = new(_faker.Phone.PhoneNumber("9########"), AreaCodeValueObject.Create("11"));
             ContactEntity registeredContact = new(registeredContactName, registeredContactEmail, registeredContactPhone);
-            UpdateContactInput input = new()
+            UpdateContactInput updateContactInput = new()
             {
                 ContactId = registeredContact.Id,
                 ContactFirstName = _faker.Name.FirstName(),
@@ -237,13 +248,15 @@ namespace Postech.PhaseOne.GroupEight.TechChallenge.UnitTests.Suite.Domain.Handl
             Mock<IContactRepository> contactRepository = new();
             contactRepository.Setup(c => c.GetByIdAsync(registeredContact.Id)).ReturnsAsync(registeredContact);
             Mock<IContactPhoneValueObjectFactory> contactPhoneFactory = new();
+            Mock<IRegisteredContactChecker> registeredContactChecker = new();
+            registeredContactChecker.Setup(r => r.CheckRegisteredContactAsync(It.Is<ContactEntity>(contact => contact != null))).ReturnsAsync(false);
             contactPhoneFactory
-                .Setup(c => c.CreateAsync(input.ContactPhoneNumber, input.ContactPhoneNumberAreaCode))
+                .Setup(c => c.CreateAsync(updateContactInput.ContactPhoneNumber, updateContactInput.ContactPhoneNumberAreaCode))
                 .ThrowsAsync(new ContactPhoneNumberException("The phone number is invalid.", newInvalidPhoneNumber));
-            UpdateContactHandler handler = new(contactRepository.Object, contactPhoneFactory.Object);
+            UpdateContactHandler handler = new(contactRepository.Object, contactPhoneFactory.Object, registeredContactChecker.Object);
 
             // Assert
-            ContactPhoneNumberException exception = await Assert.ThrowsAsync<ContactPhoneNumberException>(() => handler.Handle(input, CancellationToken.None));
+            ContactPhoneNumberException exception = await Assert.ThrowsAsync<ContactPhoneNumberException>(() => handler.Handle(updateContactInput, CancellationToken.None));
             exception.Message.Should().NotBeNullOrEmpty();
             exception.PhoneNumber.Should().Be(newInvalidPhoneNumber);
             contactRepository.Verify(c => c.GetByIdAsync(registeredContact.Id), Times.Once());
@@ -251,38 +264,36 @@ namespace Postech.PhaseOne.GroupEight.TechChallenge.UnitTests.Suite.Domain.Handl
             contactRepository.Verify(c => c.SaveChangesAsync(), Times.Never());
         }
 
-        [Theory(DisplayName = "Updating a registered contact with a new non existing area code")]
-        [InlineData("01")]
-        [InlineData("90")]
-        [InlineData("100")]
-        [InlineData("1000")]
+        [Fact(DisplayName = "Updating a registered contact with the same data as another contact")]
         [Trait("Action", "Handle")]
-        public async Task Handle_UpdatingRegisteredContactWithNewNonExistingAreaCode_ShouldThrowNotFoundException(string nonExistingAreaCode)
+        public async Task Handle_UpdatingRegisteredContactWithTheSameDataAsAnotherContact_ShouldThrowDomainException()
         {
             // Arrange
             ContactNameValueObject registeredContactName = new(_faker.Name.FirstName(), _faker.Name.LastName());
             ContactEmailValueObject registeredContactEmail = new(_faker.Internet.Email());
             ContactPhoneValueObject registeredContactPhone = new(_faker.Phone.PhoneNumber("9########"), AreaCodeValueObject.Create("11"));
             ContactEntity registeredContact = new(registeredContactName, registeredContactEmail, registeredContactPhone);
-            UpdateContactInput input = new()
+            UpdateContactInput updateContactInput = new()
             {
                 ContactId = registeredContact.Id,
                 ContactFirstName = _faker.Name.FirstName(),
                 ContactLastName = _faker.Name.LastName(),
                 ContactEmail = _faker.Internet.Email(),
                 ContactPhoneNumber = _faker.Phone.PhoneNumber("9########"),
-                ContactPhoneNumberAreaCode = nonExistingAreaCode,
+                ContactPhoneNumberAreaCode = "11",
             };
             Mock<IContactRepository> contactRepository = new();
             contactRepository.Setup(c => c.GetByIdAsync(registeredContact.Id)).ReturnsAsync(registeredContact);
             Mock<IContactPhoneValueObjectFactory> contactPhoneFactory = new();
             contactPhoneFactory
-                .Setup(c => c.CreateAsync(input.ContactPhoneNumber, input.ContactPhoneNumberAreaCode))
-                .ThrowsAsync(new NotFoundException("The area code was not found."));
-            UpdateContactHandler handler = new(contactRepository.Object, contactPhoneFactory.Object);
+                .Setup(c => c.CreateAsync(updateContactInput.ContactPhoneNumber, updateContactInput.ContactPhoneNumberAreaCode))
+                .ReturnsAsync(new ContactPhoneValueObject(updateContactInput.ContactPhoneNumber, AreaCodeValueObject.Create(updateContactInput.ContactPhoneNumberAreaCode)));
+            Mock<IRegisteredContactChecker> registeredContactChecker = new();
+            registeredContactChecker.Setup(r => r.CheckRegisteredContactAsync(It.Is<ContactEntity>(contact => contact != null))).ReturnsAsync(true);
+            UpdateContactHandler handler = new(contactRepository.Object, contactPhoneFactory.Object, registeredContactChecker.Object);
 
             // Assert
-            NotFoundException exception = await Assert.ThrowsAsync<NotFoundException>(() => handler.Handle(input, CancellationToken.None));
+            DomainException exception = await Assert.ThrowsAsync<DomainException>(() => handler.Handle(updateContactInput, CancellationToken.None));
             exception.Message.Should().NotBeNullOrEmpty();
             contactRepository.Verify(c => c.GetByIdAsync(registeredContact.Id), Times.Once());
             contactRepository.Verify(c => c.Update(registeredContact), Times.Never());

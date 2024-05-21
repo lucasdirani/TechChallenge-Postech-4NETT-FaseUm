@@ -1,5 +1,4 @@
 ﻿using Postech.PhaseOne.GroupEight.TechChallenge.Domain.Exceptions.ValueObjects;
-using System.ComponentModel.DataAnnotations;
 using System.Text.RegularExpressions;
 
 namespace Postech.PhaseOne.GroupEight.TechChallenge.Domain.ValueObjects
@@ -17,7 +16,7 @@ namespace Postech.PhaseOne.GroupEight.TechChallenge.Domain.ValueObjects
         public string FirstName { get; init; }
         public string LastName { get; init; }
 
-        [GeneratedRegex("^[A-Za-zÀ-ÖØ-öø-ÿ]+(?:-[A-Za-zÀ-ÖØ-öø-ÿ]+)?(?:\\s[A-Za-zÀ-ÖØ-öø-ÿ]+(?:-[A-Za-zÀ-ÖØ-öø-ÿ]+)?)?$", RegexOptions.Compiled)]
+        [GeneratedRegex("^[A-Za-zÀ-ÖØ-öø-ÿ']+(?:-[A-Za-zÀ-ÖØ-öø-ÿ']+)?(?:\\s[A-Za-zÀ-ÖØ-öø-ÿ']+(?:-[A-Za-zÀ-ÖØ-öø-ÿ']+)?)?$", RegexOptions.Compiled)]
         private static partial Regex FirstNameRegex();
 
         [GeneratedRegex("^[A-Za-zÀ-ÖØ-öø-ÿ']+(?:-[A-Za-zÀ-ÖØ-öø-ÿ']+)?(?:\\s[A-Za-zÀ-ÖØ-öø-ÿ']+(?:-[A-Za-zÀ-ÖØ-öø-ÿ']+)?)?$", RegexOptions.Compiled)]
@@ -32,6 +31,19 @@ namespace Postech.PhaseOne.GroupEight.TechChallenge.Domain.ValueObjects
         public bool HasBeenChanged(string otherFirstName, string otherLastName)
         {
             return FirstName != otherFirstName || LastName != otherLastName;
+        }
+
+        public virtual bool Equals(ContactNameValueObject? other)
+        {
+            if (ReferenceEquals(this, other)) return true;
+            if (other is null) return false;
+            return string.Equals(FirstName, other.FirstName, StringComparison.OrdinalIgnoreCase)
+                && string.Equals(LastName, other.LastName, StringComparison.OrdinalIgnoreCase);
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(FirstName, LastName);
         }
     }
 }

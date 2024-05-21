@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using Postech.PhaseOne.GroupEight.TechChallenge.Domain.Commands.Outputs;
+using Postech.PhaseOne.GroupEight.TechChallenge.Domain.ViewModels;
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics.CodeAnalysis;
 
@@ -9,7 +10,7 @@ namespace Postech.PhaseOne.GroupEight.TechChallenge.Domain.Commands.Inputs
     /// Object that stores contact search data.
     /// </summary>
     [ExcludeFromCodeCoverage]
-    public class FindContactInput : IRequest<DefaultOutput>
+    public class FindContactInput : IRequest<DefaultOutput<IEnumerable<FindContactByAreaCodeViewModel>>>
     {
         /// <summary>
         /// The area code of the contact's phone number that will be used as a filter for the search.

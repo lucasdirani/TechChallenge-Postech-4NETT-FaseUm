@@ -4,10 +4,10 @@ using System.Text.Json.Serialization;
 namespace Postech.PhaseOne.GroupEight.TechChallenge.Domain.ViewModels
 {
     /// <summary>
-    /// Object that stores data returned from the find contact endpoint.
+    /// Object that stores data returned from the add contact endpoint.
     /// </summary>
     [ExcludeFromCodeCoverage]
-    public record FindContactByAreaCodeViewModel
+    public record AddNewContactViewModel
     {
         /// <summary>
         /// The identification of the contact.

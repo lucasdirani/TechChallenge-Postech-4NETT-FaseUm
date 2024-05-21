@@ -48,6 +48,15 @@ namespace Postech.PhaseOne.GroupEight.TechChallenge.Infra.Data.Repositories
             return await _dbContext.Contacts.Where(contact => contact.ContactPhone.AreaCode.Value == areaCodeValue && contact.Active).ToListAsync();
         }
 
+        public async Task<IEnumerable<ContactEntity>> GetContactsByContactPhoneAsync(ContactPhoneValueObject contactPhone)
+        {
+            return await _dbContext
+                .Contacts
+                .Where(contact => contact.ContactPhone.Number == contactPhone.Number && contact.ContactPhone.AreaCode.Value == contactPhone.AreaCode.Value)
+                .AsNoTracking()
+                .ToListAsync();
+        }
+
         public async Task InsertAsync(ContactEntity entity)
         {
             await _dbContext.Contacts.AddAsync(entity);
