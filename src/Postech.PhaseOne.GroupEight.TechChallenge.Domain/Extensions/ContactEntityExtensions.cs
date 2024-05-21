@@ -32,5 +32,19 @@ namespace Postech.PhaseOne.GroupEight.TechChallenge.Domain.Extensions
                 ContactPhoneNumber = contact.ContactPhone.Number
             };
         }
+
+        public static UpdateContactViewModel AsUpdateContactViewModel(this ContactEntity contact)
+        {
+            return new UpdateContactViewModel()
+            {
+                ContactId = contact.Id,
+                ContactEmail = contact.ContactEmail.Value,
+                ContactFirstName = contact.ContactName.FirstName,
+                ContactLastName = contact.ContactName.LastName,
+                ContactPhoneAreaCode = contact.ContactPhone.AreaCode.Value,
+                ContactPhoneNumber = contact.ContactPhone.Number,
+                IsActive = contact.IsActive()
+            };
+        }
     }
 }
