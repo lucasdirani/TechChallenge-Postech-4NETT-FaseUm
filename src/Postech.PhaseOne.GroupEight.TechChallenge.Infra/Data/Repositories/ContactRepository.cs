@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;
 using Postech.PhaseOne.GroupEight.TechChallenge.Domain.Entities;
 using Postech.PhaseOne.GroupEight.TechChallenge.Domain.Interfaces.Repositories;
 using Postech.PhaseOne.GroupEight.TechChallenge.Domain.ValueObjects;
@@ -76,6 +77,11 @@ namespace Postech.PhaseOne.GroupEight.TechChallenge.Infra.Data.Repositories
         public void UpdateRange(List<ContactEntity> entities)
         {
             _dbContext.Contacts.UpdateRange(entities);
+        }
+
+        public async Task<IDbContextTransaction> BeginTransactionAsync()
+        {
+            return await _dbContext.Database.BeginTransactionAsync();
         }
     }
 }

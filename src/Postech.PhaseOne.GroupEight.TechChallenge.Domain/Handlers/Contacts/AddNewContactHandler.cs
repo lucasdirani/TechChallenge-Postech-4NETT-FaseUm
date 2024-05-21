@@ -27,23 +27,36 @@ namespace Postech.PhaseOne.GroupEight.TechChallenge.Domain.Handlers.Contacts
         /// <returns>Set of data indicating whether the contact register operation was performed successfully.</returns>
         public async Task<DefaultOutput> Handle(AddContactInput request, CancellationToken cancellationToken)
         {       
-            ContactNameValueObject contactName = new(request.ContactFirstName, request.ContactLastName);
-            ContactEmailValueObject contactEmail = new(request.ContactEmail);
-            ContactPhoneValueObject contactPhone = await _contactPhoneFactory.CreateAsync(request.ContactPhoneNumber, request.ContactPhoneNumberAreaCode);
-            ContactEntity contact = new(contactName, contactEmail, contactPhone);
+            using(var transaction = await _contactRepository.BeginTransactionAsync())
+            {
+                try
+                {
+                    ContactNameValueObject contactName = new(request.ContactFirstName, request.ContactLastName);
+                    ContactEmailValueObject contactEmail = new(request.ContactEmail);
+                    ContactPhoneValueObject contactPhone = await _contactPhoneFactory.CreateAsync(request.ContactPhoneNumber, request.ContactPhoneNumberAreaCode);
+                    ContactEntity contact = new(contactName, contactEmail, contactPhone);
 
-            bool contactExists = await _contactRepository.ExistsAsync(x => 
-                x.ContactEmail.Value.Equals(request.ContactEmail)
-                && x.ContactName.FirstName.Equals(request.ContactFirstName)
-                && x.ContactName.LastName.Equals(request.ContactLastName)
-                && x.ContactPhone.Number.Equals(request.ContactPhoneNumber)
-                && x.ContactPhone.AreaCode.Value.Equals(request.ContactPhoneNumberAreaCode));
+                    bool contactExists = await _contactRepository.ExistsAsync(x =>
+                        x.ContactEmail.Value.Equals(request.ContactEmail)
+                        && x.ContactName.FirstName.Equals(request.ContactFirstName)
+                        && x.ContactName.LastName.Equals(request.ContactLastName)
+                        && x.ContactPhone.Number.Equals(request.ContactPhoneNumber)
+                        && x.ContactPhone.AreaCode.Value.Equals(request.ContactPhoneNumberAreaCode));
 
-            DomainException.ThrowWhen(contactExists, "The contact is already registered.");
+                    DomainException.ThrowWhen(contactExists, "The contact is already registered.");
 
-            await _contactRepository.InsertAsync(contact);
-            await _contactRepository.SaveChangesAsync();
-            return new DefaultOutput(true, "The contact was registered successfully.", new { contact });
+                    await _contactRepository.InsertAsync(contact);
+                    await _contactRepository.SaveChangesAsync();
+
+                    transaction.Commit();
+                    return new DefaultOutput(true, "The contact was registered successfully.", new { contact });
+                }
+                catch (Exception)
+                {
+                    await transaction.RollbackAsync();
+                    throw;
+                }
+            }           
         }
     }
 }

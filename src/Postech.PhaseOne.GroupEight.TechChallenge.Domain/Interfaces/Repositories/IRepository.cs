@@ -1,4 +1,5 @@
-﻿using Postech.PhaseOne.GroupEight.TechChallenge.Domain.Interfaces.Entities;
+﻿using Microsoft.EntityFrameworkCore.Storage;
+using Postech.PhaseOne.GroupEight.TechChallenge.Domain.Interfaces.Entities;
 using System.Linq.Expressions;
 
 namespace Postech.PhaseOne.GroupEight.TechChallenge.Domain.Interfaces.Repositories
@@ -17,5 +18,6 @@ namespace Postech.PhaseOne.GroupEight.TechChallenge.Domain.Interfaces.Repositori
         Task SaveChangesAsync();
         void Update(T entity);
         void UpdateRange(List<T> entities);
+        Task<IDbContextTransaction> BeginTransactionAsync();
     }
 }
