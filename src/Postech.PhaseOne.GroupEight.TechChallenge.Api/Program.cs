@@ -20,7 +20,12 @@ builder.Services.AddSwaggerGen(c =>
     { 
         Title = "ContactManagement API (Tech Challenge)", 
         Version = "v1", 
-        Description = "Alunos responsáveis: Breno Gomes, Lucas Pinho, Lucas Ruiz, Ricardo Fulgencio e Tatiana Lima"
+        Description = "Alunos responsáveis: Breno Gomes (RM353570), Lucas Pinho (RM356299), Lucas Ruiz (RM353388), Ricardo Fulgencio (RM354423) e Tatiana Lima (RM353457)",
+        Contact = new OpenApiContact()
+        {
+            Name = "Grupo 8 (Tech Challenge)",
+            Url = new Uri("https://teal-cookie-1f0.notion.site/d507d4bd69e94faead0f0edb0546a85e?v=6c004328d19943ca9e18b94dc80a3ae9&pvs=4")
+        }
     });
     c.EnableAnnotations();
 });
