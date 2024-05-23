@@ -18,6 +18,7 @@ namespace Postech.PhaseOne.GroupEight.TechChallenge.UnitTests.Suite.Domain.Value
         [InlineData("Antônio", "Pereira")]
         [InlineData("Júlio Cesar", "Antunes")]
         [InlineData("Leila", "Alves Gomes")]
+        [InlineData("José Paulo", "Bezerra Maciel Júnior")]
         [Trait("Action", "ContactNameValueObject")]
         public void ContactNameValueObject_ValidData_ShouldConstructContactNameValueObject(string firstName, string lastName)
         {
@@ -33,6 +34,7 @@ namespace Postech.PhaseOne.GroupEight.TechChallenge.UnitTests.Suite.Domain.Value
         [InlineData("Br4no", "Jhefferson")]
         [InlineData("Luc?s", "Montarroyos")]
         [InlineData("Ta[tiana", "Lima")]
+        [InlineData("Maria Aparecida Benedita Francisca da Conceição", "Lima")]
         [Trait("Action", "ContactNameValueObject")]
         public void ContactNameValueObject_InvalidFirstName_ShouldThrowContactFirstNameException(string firstName, string lastName)
         {
@@ -49,6 +51,7 @@ namespace Postech.PhaseOne.GroupEight.TechChallenge.UnitTests.Suite.Domain.Value
         [InlineData("Tatiana", "Lim@")]
         [InlineData("Juan", "Silva ")]
         [InlineData("Leila", "Alves Gom^s")]
+        [InlineData("Cassio", "Antônio Carlos Eduardo Francisco Gabriel da Silva Oliveira Pereira")]
         [Trait("Action", "ContactNameValueObject")]
         public void ContactNameValueObject_InvalidLastName_ShouldThrowContactLastNameException(string firstName, string lastName)
         {
