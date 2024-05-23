@@ -5,10 +5,10 @@ using Postech.PhaseOne.GroupEight.TechChallenge.Domain.Interfaces.Repositories;
 namespace Postech.PhaseOne.GroupEight.TechChallenge.Domain.Checkers
 {
     /// <summary>
-    /// Encapsulates the logic to check the existing contact record.
+    /// Encapsulates the logic to check the record of an existing contact in the contact registration flow.
     /// </summary>
     /// <param name="contactRepository">Repository that accesses contacts stored in the database.</param>
-    public class RegisteredContactChecker(IContactRepository contactRepository) : IRegisteredContactChecker
+    public class AddNewContactChecker(IContactRepository contactRepository) : IRegisteredContactChecker
     {
         private readonly IContactRepository _contactRepository = contactRepository;
 

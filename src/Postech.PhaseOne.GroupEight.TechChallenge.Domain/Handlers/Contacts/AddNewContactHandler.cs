@@ -1,4 +1,6 @@
 ﻿using MediatR;
+using Microsoft.Extensions.DependencyInjection;
+using Postech.PhaseOne.GroupEight.TechChallenge.Domain.Checkers;
 using Postech.PhaseOne.GroupEight.TechChallenge.Domain.Checkers.Interfaces;
 using Postech.PhaseOne.GroupEight.TechChallenge.Domain.Commands.Inputs;
 using Postech.PhaseOne.GroupEight.TechChallenge.Domain.Commands.Outputs;
@@ -21,8 +23,8 @@ namespace Postech.PhaseOne.GroupEight.TechChallenge.Domain.Handlers.Contacts
     /// <param name="registeredContactChecker">Encapsulates the logic to check the existing contact record.</param>
     public class AddNewContactHandler(
         IContactRepository contactRepository, 
-        IContactPhoneValueObjectFactory contactPhoneFactory, 
-        IRegisteredContactChecker registeredContactChecker) 
+        IContactPhoneValueObjectFactory contactPhoneFactory,
+        [FromKeyedServices(nameof(AddNewContactChecker))] IRegisteredContactChecker registeredContactChecker) 
         : IRequestHandler<AddContactInput, DefaultOutput<AddNewContactViewModel>>
     {
         private readonly IContactRepository _contactRepository = contactRepository;

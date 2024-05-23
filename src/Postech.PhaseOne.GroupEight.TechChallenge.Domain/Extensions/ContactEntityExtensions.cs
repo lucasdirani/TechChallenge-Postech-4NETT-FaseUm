@@ -46,5 +46,10 @@ namespace Postech.PhaseOne.GroupEight.TechChallenge.Domain.Extensions
                 IsActive = contact.IsActive()
             };
         }
+
+        public static ContactEntity Copy(this ContactEntity contact)
+        {
+            return new(contact.ContactName, contact.ContactEmail, contact.ContactPhone);
+        }
     }
 }

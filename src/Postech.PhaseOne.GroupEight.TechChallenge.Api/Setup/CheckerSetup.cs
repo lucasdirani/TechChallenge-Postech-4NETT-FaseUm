@@ -10,7 +10,8 @@ namespace Postech.PhaseOne.GroupEight.TechChallenge.Api.Setup
         public static void AddDependencyChecker(this IServiceCollection services)
         {
             ArgumentNullException.ThrowIfNull(services);
-            services.AddScoped<IRegisteredContactChecker, RegisteredContactChecker>();
+            services.AddKeyedScoped<IRegisteredContactChecker, AddNewContactChecker>(nameof(AddNewContactChecker));
+            services.AddKeyedScoped<IRegisteredContactChecker, UpdateContactChecker>(nameof(UpdateContactChecker));
         }
     }
 }
