@@ -17,6 +17,15 @@ namespace Postech.PhaseOne.GroupEight.TechChallenge.Domain.ValueObjects
             Number = number;
         }
 
+        public static ContactPhoneValueObject Create(string phoneNumberWithAreaCode)
+        {
+            string phoneNumberWithAreaCodePattern = @"\((.*?)\)(\d+)";
+            Match phoneNumberWithAreaCodePatternMatch = Regex.Match(phoneNumberWithAreaCode, phoneNumberWithAreaCodePattern);
+            string areaCode = phoneNumberWithAreaCodePatternMatch.Groups[1].Value;
+            string phoneNumber = phoneNumberWithAreaCodePatternMatch.Groups[2].Value;
+            return new(phoneNumber, AreaCodeValueObject.Create(areaCode));
+        }
+
         public string Number { get; init; }
         public AreaCodeValueObject AreaCode { get; init; }
 

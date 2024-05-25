@@ -8,7 +8,6 @@ using Postech.PhaseOne.GroupEight.TechChallenge.Domain.Handlers.Contacts;
 using Postech.PhaseOne.GroupEight.TechChallenge.Domain.Interfaces.Repositories;
 using Postech.PhaseOne.GroupEight.TechChallenge.Domain.ValueObjects;
 using Postech.PhaseOne.GroupEight.TechChallenge.Domain.ViewModels;
-using System.Text.RegularExpressions;
 
 namespace Postech.PhaseOne.GroupEight.TechChallenge.FunctionalTests.StepDefinitions
 {
@@ -40,12 +39,8 @@ namespace Postech.PhaseOne.GroupEight.TechChallenge.FunctionalTests.StepDefiniti
         [Given(@"the phone number of the new contact is ""([^""]*)""")]
         public void GivenThePhoneNumberOfTheNewContactIs(string contactPhoneNumber)
         {
-            string phoneNumberPattern = @"\((.*?)\)(\d+)";
-            var phoneNumberPatternMatch = Regex.Match(contactPhoneNumber, phoneNumberPattern);
-            string areaCodePhoneNumber = phoneNumberPatternMatch.Groups[1].Value;
-            string phoneNumber = phoneNumberPatternMatch.Groups[2].Value;
-            _contactPhone = new(phoneNumber, AreaCodeValueObject.Create(areaCodePhoneNumber));
-            _contactPhoneFactory.Setup(f => f.CreateAsync(phoneNumber, areaCodePhoneNumber)).ReturnsAsync(_contactPhone);
+            _contactPhone = ContactPhoneValueObject.Create(contactPhoneNumber);
+            _contactPhoneFactory.Setup(f => f.CreateAsync(_contactPhone.Number, _contactPhone.AreaCode.Value)).ReturnsAsync(_contactPhone);
         }
 
         [Given(@"the new contact has not yet been registered by the contact administrator")]
