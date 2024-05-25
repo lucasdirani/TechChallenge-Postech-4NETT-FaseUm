@@ -2,6 +2,7 @@
 using FluentAssertions;
 using Postech.PhaseOne.GroupEight.TechChallenge.Domain.Exceptions.ValueObjects;
 using Postech.PhaseOne.GroupEight.TechChallenge.Domain.ValueObjects;
+using System.Text.RegularExpressions;
 
 namespace Postech.PhaseOne.GroupEight.TechChallenge.UnitTests.Suite.Domain.ValueObjects
 {
@@ -102,6 +103,27 @@ namespace Postech.PhaseOne.GroupEight.TechChallenge.UnitTests.Suite.Domain.Value
             AreaCodeValueObject areaCode = AreaCodeValueObject.Create(currentAreaCode);
             ContactPhoneValueObject contactPhone = new(currentPhoneNumber, areaCode);
             contactPhone.HasBeenChanged(otherPhoneNumber, AreaCodeValueObject.Create(otherAreaCode)).Should().BeFalse();
+        }
+
+        [Theory(DisplayName = "Constructing a valid object of type ContactPhoneValueObject")]
+        [InlineData("(11)987654325")]
+        [InlineData("(31)987654330")]
+        [InlineData("(99)987654343")]
+        [InlineData("(21)987654363")]
+        [InlineData("(44)987654366")]
+        [InlineData("(51)987654369")]
+        [InlineData("(12)987654370")]
+        [InlineData("(13)87654337")]
+        [InlineData("(61)87654327")]
+        [InlineData("(73)87654321")]
+        [Trait("Action", "Create")]
+        public void Create_ValidData_ShouldConstructContactPhoneValueObject(string phoneNumberWithAreaCode)
+        {
+            Match phoneNumberWithAreaCodePatternMatch = Regex.Match(phoneNumberWithAreaCode, @"\((.*?)\)(\d+)");
+            ContactPhoneValueObject contactPhone = ContactPhoneValueObject.Create(phoneNumberWithAreaCode);
+            contactPhone.Should().NotBeNull();
+            contactPhone.Number.Should().Be(phoneNumberWithAreaCodePatternMatch.Groups[2].Value);
+            contactPhone.AreaCode.Value.Should().Be(phoneNumberWithAreaCodePatternMatch.Groups[1].Value);
         }
     }
 }
