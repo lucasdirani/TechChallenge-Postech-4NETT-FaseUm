@@ -27,3 +27,20 @@ services:
       - db
     links:
       - db:postgres
+
+  # .NET Application
+  web:
+    build:
+      context: .
+      dockerfile: src/Postech.PhaseOne.GroupEight.TechChallenge.Api/Dockerfile
+    container_name: dotnet_app
+    restart: always
+    ports:
+      - "5005:8080"
+    environment:
+      ASPNETCORE_ENVIRONMENT: "Development"
+      ConnectionStrings__DefaultConnection: "Host=db;Database=ContactManagementDB;Username=admin;Password=Admin*123"
+    depends_on:
+      - db
+    links:
+      - db
