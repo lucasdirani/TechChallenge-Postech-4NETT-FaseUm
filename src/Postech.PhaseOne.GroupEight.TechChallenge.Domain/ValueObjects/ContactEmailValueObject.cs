@@ -25,5 +25,17 @@ namespace Postech.PhaseOne.GroupEight.TechChallenge.Domain.ValueObjects
         {
             return Value != otherEmailAddress;
         }
+
+        public virtual bool Equals(ContactEmailValueObject? other)
+        {
+            if (ReferenceEquals(this, other)) return true;
+            if (other is null) return false;
+            return string.Equals(Value, other.Value, StringComparison.OrdinalIgnoreCase);
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(Value);
+        }
     }
 }

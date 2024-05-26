@@ -1,4 +1,6 @@
 ﻿using MediatR;
+using Microsoft.Extensions.DependencyInjection;
+using Postech.PhaseOne.GroupEight.TechChallenge.Domain.Checkers;
 using Postech.PhaseOne.GroupEight.TechChallenge.Domain.Checkers.Interfaces;
 using Postech.PhaseOne.GroupEight.TechChallenge.Domain.Commands.Inputs;
 using Postech.PhaseOne.GroupEight.TechChallenge.Domain.Commands.Outputs;
@@ -21,7 +23,7 @@ namespace Postech.PhaseOne.GroupEight.TechChallenge.Domain.Handlers.Contacts
     public class UpdateContactHandler(
         IContactRepository contactRepository, 
         IContactPhoneValueObjectFactory contactPhoneFactory,
-        IRegisteredContactChecker registeredContactChecker) 
+        [FromKeyedServices(nameof(UpdateContactChecker))] IRegisteredContactChecker registeredContactChecker) 
         : IRequestHandler<UpdateContactInput, DefaultOutput<UpdateContactViewModel>>
     {
         private readonly IContactRepository _contactRepository = contactRepository;

@@ -5,7 +5,6 @@ using Postech.PhaseOne.GroupEight.TechChallenge.Domain.Entities;
 using Postech.PhaseOne.GroupEight.TechChallenge.Domain.Handlers.Contacts;
 using Postech.PhaseOne.GroupEight.TechChallenge.Domain.Interfaces.Repositories;
 using Postech.PhaseOne.GroupEight.TechChallenge.Domain.ValueObjects;
-using System.Text.RegularExpressions;
 
 namespace Postech.PhaseOne.GroupEight.TechChallenge.FunctionalTests.StepDefinitions
 {
@@ -35,11 +34,7 @@ namespace Postech.PhaseOne.GroupEight.TechChallenge.FunctionalTests.StepDefiniti
         [Given(@"the phone number of the registered contact is ""([^""]*)""")]
         public void GivenThePhoneNumberOfTheRegisteredContactIs(string contactPhoneNumber)
         {
-            string phoneNumberPattern = @"\((.*?)\)(\d+)";
-            var phoneNumberPatternMatch = Regex.Match(contactPhoneNumber, phoneNumberPattern);
-            string areaCodePhoneNumber = phoneNumberPatternMatch.Groups[1].Value;
-            string phoneNumber = phoneNumberPatternMatch.Groups[2].Value;
-            _contactPhone = new(phoneNumber, AreaCodeValueObject.Create(areaCodePhoneNumber));
+            _contactPhone = ContactPhoneValueObject.Create(contactPhoneNumber);
         }
 
         [Given(@"the registered contact is active in the contact list")]

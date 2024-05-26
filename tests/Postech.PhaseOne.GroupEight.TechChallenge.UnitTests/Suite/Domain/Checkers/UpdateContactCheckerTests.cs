@@ -2,12 +2,13 @@
 using Moq;
 using Postech.PhaseOne.GroupEight.TechChallenge.Domain.Checkers;
 using Postech.PhaseOne.GroupEight.TechChallenge.Domain.Entities;
+using Postech.PhaseOne.GroupEight.TechChallenge.Domain.Extensions;
 using Postech.PhaseOne.GroupEight.TechChallenge.Domain.Interfaces.Repositories;
 using Postech.PhaseOne.GroupEight.TechChallenge.UnitTests.Fakers.Domain.Entities;
 
 namespace Postech.PhaseOne.GroupEight.TechChallenge.UnitTests.Suite.Domain.Checkers
 {
-    public class RegisteredContactCheckerTests
+    public class UpdateContactCheckerTests
     {
         [Fact(DisplayName = "Contact already registered in the database")]
         [Trait("Action", "CheckRegisteredContactAsync")]
@@ -15,16 +16,17 @@ namespace Postech.PhaseOne.GroupEight.TechChallenge.UnitTests.Suite.Domain.Check
         {
             // Arrange
             ContactEntity contactToBeChecked = new ContactEntityFaker().Generate();
+            ContactEntity existentContact = contactToBeChecked.Copy();
             List<ContactEntity> registeredContacts = new ContactEntityFaker().Generate(10);
-            registeredContacts.Add(contactToBeChecked);
+            registeredContacts.Add(existentContact);
             Mock<IContactRepository> contactRepository = new();
-            bool GetContactsByContactPhoneExpression(ContactEntity contact) => 
-                contact.ContactPhone.Number == contactToBeChecked.ContactPhone.Number 
+            bool GetContactsByContactPhoneExpression(ContactEntity contact) =>
+                contact.ContactPhone.Number == contactToBeChecked.ContactPhone.Number
                 && contact.ContactPhone.AreaCode.Value == contactToBeChecked.ContactPhone.AreaCode.Value;
             contactRepository
                 .Setup(contact => contact.GetContactsByContactPhoneAsync(contactToBeChecked.ContactPhone))
                 .ReturnsAsync(registeredContacts.Where(GetContactsByContactPhoneExpression));
-            RegisteredContactChecker checker = new(contactRepository.Object);
+            UpdateContactChecker checker = new(contactRepository.Object);
 
             // Act
             bool result = await checker.CheckRegisteredContactAsync(contactToBeChecked);
@@ -47,7 +49,7 @@ namespace Postech.PhaseOne.GroupEight.TechChallenge.UnitTests.Suite.Domain.Check
             contactRepository
                 .Setup(contact => contact.GetContactsByContactPhoneAsync(contactToBeChecked.ContactPhone))
                 .ReturnsAsync(registeredContacts.Where(GetContactsByContactPhoneExpression));
-            RegisteredContactChecker checker = new(contactRepository.Object);
+            UpdateContactChecker checker = new(contactRepository.Object);
 
             // Act
             bool result = await checker.CheckRegisteredContactAsync(contactToBeChecked);

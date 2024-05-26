@@ -13,7 +13,7 @@ namespace Postech.PhaseOne.GroupEight.TechChallenge.Domain.Exceptions.ValueObjec
         {
             if (!format.IsMatch(argument))
             {
-                throw new ContactFirstNameException("The contact's first name must only contain letters (lowercase or capital letters), accents and hyphens.", argument);
+                throw new ContactFirstNameException("The contact's first name must contain only letters (lowercase or uppercase), accents, hyphens and must not exceed forty characters.", argument);
             }
         }
     }
