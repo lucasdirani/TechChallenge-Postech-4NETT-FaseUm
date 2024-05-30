@@ -1,0 +1,226 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jmeterTestPlan version="1.2" properties="5.0" jmeter="5.4.1">
+  <hashTree>
+    <TestPlan guiclass="TestPlanGui" testclass="TestPlan" testname="Contact Management Test Plan" enabled="true">
+      <stringProp name="TestPlan.comments">Creation of load and stress tests for the contact management API developed in the Tech Challenge</stringProp>
+      <boolProp name="TestPlan.functional_mode">false</boolProp>
+      <boolProp name="TestPlan.tearDown_on_shutdown">true</boolProp>
+      <boolProp name="TestPlan.serialize_threadgroups">false</boolProp>
+      <elementProp name="TestPlan.user_defined_variables" elementType="Arguments" guiclass="ArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
+        <collectionProp name="Arguments.arguments">
+          <elementProp name="server_name" elementType="Argument">
+            <stringProp name="Argument.name">server_name</stringProp>
+            <stringProp name="Argument.value">localhost</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="server_port_number" elementType="Argument">
+            <stringProp name="Argument.name">server_port_number</stringProp>
+            <stringProp name="Argument.value">5005</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+        </collectionProp>
+      </elementProp>
+      <stringProp name="TestPlan.user_define_classpath"></stringProp>
+    </TestPlan>
+    <hashTree>
+      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Thread Group" enabled="true">
+        <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
+        <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller" enabled="true">
+          <boolProp name="LoopController.continue_forever">false</boolProp>
+          <stringProp name="LoopController.loops">1</stringProp>
+        </elementProp>
+        <stringProp name="ThreadGroup.num_threads">500</stringProp>
+        <stringProp name="ThreadGroup.ramp_time">5</stringProp>
+        <boolProp name="ThreadGroup.scheduler">false</boolProp>
+        <stringProp name="ThreadGroup.duration"></stringProp>
+        <stringProp name="ThreadGroup.delay"></stringProp>
+        <boolProp name="ThreadGroup.same_user_on_next_iteration">true</boolProp>
+      </ThreadGroup>
+      <hashTree>
+        <ConfigTestElement guiclass="HttpDefaultsGui" testclass="ConfigTestElement" testname="HTTP Request Defaults" enabled="true">
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
+            <collectionProp name="Arguments.arguments"/>
+          </elementProp>
+          <stringProp name="HTTPSampler.domain">${server_name}</stringProp>
+          <stringProp name="HTTPSampler.port">${server_port_number}</stringProp>
+          <stringProp name="HTTPSampler.protocol"></stringProp>
+          <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+          <stringProp name="HTTPSampler.path">/contacts</stringProp>
+          <stringProp name="HTTPSampler.concurrentPool">6</stringProp>
+          <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+          <stringProp name="HTTPSampler.response_timeout"></stringProp>
+        </ConfigTestElement>
+        <hashTree/>
+        <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP Header Manager" enabled="true">
+          <collectionProp name="HeaderManager.headers">
+            <elementProp name="" elementType="Header">
+              <stringProp name="Header.name">Content-Type</stringProp>
+              <stringProp name="Header.value">application/json</stringProp>
+            </elementProp>
+          </collectionProp>
+        </HeaderManager>
+        <hashTree/>
+        <BeanShellPreProcessor guiclass="TestBeanGUI" testclass="BeanShellPreProcessor" testname="/contacts (HTTP POST) PreProcessor" enabled="true">
+          <stringProp name="TestPlan.comments">Generates test data for endpoint /contacts (HTTP POST) execution</stringProp>
+          <stringProp name="filename"></stringProp>
+          <stringProp name="parameters"></stringProp>
+          <boolProp name="resetInterpreter">false</boolProp>
+          <stringProp name="script">// Gera um primeiro nome aleatório
+String[] firstNames = {
+    &quot;John&quot;, &quot;Jane&quot;, &quot;Jim&quot;, 
+    &quot;Emily&quot;, &quot;Michael&quot;, &quot;Sarah&quot;, &quot;David&quot;, &quot;Jessica&quot;, &quot;Daniel&quot;, &quot;Laura&quot;,
+    &quot;Matthew&quot;, &quot;Emma&quot;, &quot;Andrew&quot;, &quot;Olivia&quot;, &quot;Joshua&quot;, &quot;Sophia&quot;, &quot;James&quot;, 
+    &quot;Isabella&quot;, &quot;Ethan&quot;, &quot;Mia&quot;, &quot;Alexander&quot;, &quot;Charlotte&quot;, &quot;Anthony&quot;, 
+    &quot;Amelia&quot;, &quot;Benjamin&quot;, &quot;Ava&quot;, &quot;William&quot;, &quot;Harper&quot;, &quot;Christopher&quot;, 
+    &quot;Evelyn&quot;, &quot;Joseph&quot;, &quot;Abigail&quot;, &quot;Samuel&quot;, &quot;Lily&quot;, &quot;Henry&quot;, &quot;Grace&quot;, 
+    &quot;Jackson&quot;, &quot;Hannah&quot;, &quot;Sebastian&quot;, &quot;Addison&quot;, &quot;Gabriel&quot;, &quot;Victoria&quot;, 
+    &quot;Aiden&quot;, &quot;Chloe&quot;, &quot;Elijah&quot;, &quot;Ella&quot;, &quot;Ryan&quot;, &quot;Aria&quot;, &quot;Luke&quot;, &quot;Avery&quot;, 
+    &quot;Lucas&quot;, &quot;Scarlett&quot;, &quot;Owen&quot;, &quot;Zoey&quot;, &quot;Jack&quot;, &quot;Sofia&quot;, &quot;Logan&quot;, 
+    &quot;Aubrey&quot;, &quot;Isaac&quot;, &quot;Layla&quot;, &quot;Carter&quot;, &quot;Lillian&quot;, &quot;Nathan&quot;, &quot;Natalie&quot;, 
+    &quot;Caleb&quot;, &quot;Stella&quot;, &quot;Hunter&quot;, &quot;Nora&quot;, &quot;Christian&quot;, &quot;Riley&quot;, &quot;Aaron&quot;, 
+    &quot;Leah&quot;, &quot;Evan&quot;, &quot;Hazel&quot;, &quot;Adrian&quot;, &quot;Penelope&quot;, &quot;Connor&quot;, &quot;Lucy&quot;, 
+    &quot;Dylan&quot;, &quot;Zoe&quot;, &quot;Lincoln&quot;, &quot;Savannah&quot;, &quot;Eli&quot;, &quot;Audrey&quot;, &quot;Adam&quot;, 
+    &quot;Claire&quot;, &quot;Brody&quot;, &quot;Skylar&quot;, &quot;Tyler&quot;, &quot;Ellie&quot;, &quot;Henry&quot;, &quot;Violet&quot;, 
+    &quot;Landon&quot;, &quot;Samantha&quot;, &quot;Nicholas&quot;, &quot;Paisley&quot;, &quot;Jonathan&quot;, &quot;Brooklyn&quot;, 
+    &quot;Brayden&quot;, &quot;Bella&quot;, &quot;Jeremiah&quot;, &quot;Aurora&quot;
+};
+String firstName = firstNames[(int)(Math.random() * firstNames.length)];
+vars.put(&quot;firstName&quot;, firstName);
+
+// Gera um sobrenome aleatório
+String[] lastNames = {
+    &quot;Doe&quot;, &quot;Smith&quot;, &quot;Brown&quot;,
+    &quot;Johnson&quot;, &quot;Williams&quot;, &quot;Jones&quot;, &quot;Garcia&quot;, &quot;Miller&quot;, &quot;Davis&quot;, &quot;Rodriguez&quot;,
+    &quot;Martinez&quot;, &quot;Hernandez&quot;, &quot;Lopez&quot;, &quot;Gonzalez&quot;, &quot;Wilson&quot;, &quot;Anderson&quot;, &quot;Thomas&quot;,
+    &quot;Taylor&quot;, &quot;Moore&quot;, &quot;Jackson&quot;, &quot;Martin&quot;, &quot;Lee&quot;, &quot;Perez&quot;, &quot;Thompson&quot;, &quot;White&quot;,
+    &quot;Harris&quot;, &quot;Sanchez&quot;, &quot;Clark&quot;, &quot;Ramirez&quot;, &quot;Lewis&quot;, &quot;Robinson&quot;, &quot;Walker&quot;, 
+    &quot;Young&quot;, &quot;Allen&quot;, &quot;King&quot;, &quot;Wright&quot;, &quot;Scott&quot;, &quot;Torres&quot;, &quot;Nguyen&quot;, &quot;Hill&quot;, 
+    &quot;Flores&quot;, &quot;Green&quot;, &quot;Adams&quot;, &quot;Nelson&quot;, &quot;Baker&quot;, &quot;Hall&quot;, &quot;Rivera&quot;, &quot;Campbell&quot;, 
+    &quot;Mitchell&quot;, &quot;Carter&quot;, &quot;Roberts&quot;, &quot;Gomez&quot;, &quot;Phillips&quot;, &quot;Evans&quot;, &quot;Turner&quot;, 
+    &quot;Diaz&quot;, &quot;Parker&quot;, &quot;Cruz&quot;, &quot;Edwards&quot;, &quot;Collins&quot;, &quot;Reyes&quot;, &quot;Stewart&quot;, &quot;Morris&quot;, 
+    &quot;Morales&quot;, &quot;Murphy&quot;, &quot;Cook&quot;, &quot;Rogers&quot;, &quot;Gutierrez&quot;, &quot;Ortiz&quot;, &quot;Morgan&quot;, 
+    &quot;Cooper&quot;, &quot;Peterson&quot;, &quot;Bailey&quot;, &quot;Reed&quot;, &quot;Kelly&quot;, &quot;Howard&quot;, &quot;Ramos&quot;, &quot;Kim&quot;, 
+    &quot;Cox&quot;, &quot;Ward&quot;, &quot;Richardson&quot;, &quot;Watson&quot;, &quot;Brooks&quot;, &quot;Chavez&quot;, &quot;Wood&quot;, &quot;James&quot;, 
+    &quot;Bennett&quot;, &quot;Gray&quot;, &quot;Mendoza&quot;, &quot;Ruiz&quot;, &quot;Hughes&quot;, &quot;Price&quot;, &quot;Alvarez&quot;, &quot;Castillo&quot;, 
+    &quot;Sanders&quot;, &quot;Patel&quot;, &quot;Myers&quot;, &quot;Long&quot;, &quot;Ross&quot;, &quot;Foster&quot;, &quot;Jimenez&quot;, &quot;Powell&quot;, 
+    &quot;Jenkins&quot;, &quot;Perry&quot;
+};
+
+String lastName = lastNames[(int)(Math.random() * lastNames.length)];
+vars.put(&quot;lastName&quot;, lastName);
+
+// Gera um email aleatório
+String email = firstName + org.apache.commons.lang3.RandomStringUtils.randomAlphabetic(10) + &quot;@example.com&quot;;
+vars.put(&quot;email&quot;, email);
+
+// Gera um código de área aleatório
+Integer[] areaCodes = {
+    11, 12, 13, 14, 15, 16, 17, 18, 19, // São Paulo
+    21, 22, 24, // Rio de Janeiro
+    27, 28, // Espírito Santo
+    31, 32, 33, 34, 35, 37, 38, // Minas Gerais
+    41, 42, 43, 44, 45, 46, // Paraná
+    47, 48, 49, // Santa Catarina
+    51, 53, 54, 55, // Rio Grande do Sul
+    61, // Distrito Federal
+    62, 64, // Goiás
+    63, // Tocantins
+    65, 66, // Mato Grosso
+    67, // Mato Grosso do Sul
+    68, // Acre
+    69, // Rondônia
+    71, 73, 74, 75, 77, // Bahia
+    79, // Sergipe
+    81, 87, // Pernambuco
+    82, // Alagoas
+    83, // Paraíba
+    84, // Rio Grande do Norte
+    85, 88, // Ceará
+    86, 89, // Piauí
+    91, 93, 94, // Pará
+    92, 97, // Amazonas
+    95, // Roraima
+    96, // Amapá
+    98, 99 // Maranhão
+};
+int areaCode = areaCodes[(int)(Math.random() * areaCodes.length)];
+vars.put(&quot;areaCode&quot;, Integer.toString(areaCode));
+
+// Gera um número de telefone aleatório
+String phoneNumber = &apos;9&apos; + org.apache.commons.lang3.RandomStringUtils.randomNumeric(8);
+vars.put(&quot;phoneNumber&quot;, phoneNumber);</stringProp>
+        </BeanShellPreProcessor>
+        <hashTree/>
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="/contacts (HTTP POST)" enabled="true">
+          <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+            <collectionProp name="Arguments.arguments">
+              <elementProp name="" elementType="HTTPArgument">
+                <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                <stringProp name="Argument.value">{&#xd;
+	&quot;contactFirstName&quot;: &quot;${firstName}&quot;,&#xd;
+	&quot;contactLastName&quot;: &quot;${lastName}&quot;,&#xd;
+	&quot;contactEmail&quot;: &quot;${email}&quot;,&#xd;
+	&quot;contactPhoneNumber&quot;: &quot;${phoneNumber}&quot;,&#xd;
+	&quot;contactPhoneNumberAreaCode&quot;: &quot;${areaCode}&quot;&#xd;
+}</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+            </collectionProp>
+          </elementProp>
+          <stringProp name="HTTPSampler.domain"></stringProp>
+          <stringProp name="HTTPSampler.port"></stringProp>
+          <stringProp name="HTTPSampler.protocol"></stringProp>
+          <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+          <stringProp name="HTTPSampler.path"></stringProp>
+          <stringProp name="HTTPSampler.method">POST</stringProp>
+          <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+          <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+          <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+          <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+          <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+          <stringProp name="HTTPSampler.response_timeout"></stringProp>
+        </HTTPSamplerProxy>
+        <hashTree/>
+        <ResultCollector guiclass="ViewResultsFullVisualizer" testclass="ResultCollector" testname="/contacts (HTTP POST) Result" enabled="true">
+          <boolProp name="ResultCollector.error_logging">false</boolProp>
+          <objProp>
+            <name>saveConfig</name>
+            <value class="SampleSaveConfiguration">
+              <time>true</time>
+              <latency>true</latency>
+              <timestamp>true</timestamp>
+              <success>true</success>
+              <label>true</label>
+              <code>true</code>
+              <message>true</message>
+              <threadName>true</threadName>
+              <dataType>true</dataType>
+              <encoding>false</encoding>
+              <assertions>true</assertions>
+              <subresults>true</subresults>
+              <responseData>false</responseData>
+              <samplerData>false</samplerData>
+              <xml>false</xml>
+              <fieldNames>true</fieldNames>
+              <responseHeaders>false</responseHeaders>
+              <requestHeaders>false</requestHeaders>
+              <responseDataOnError>false</responseDataOnError>
+              <saveAssertionResultsFailureMessage>true</saveAssertionResultsFailureMessage>
+              <assertionsResultsToSave>0</assertionsResultsToSave>
+              <bytes>true</bytes>
+              <sentBytes>true</sentBytes>
+              <url>true</url>
+              <threadCounts>true</threadCounts>
+              <idleTime>true</idleTime>
+              <connectTime>true</connectTime>
+            </value>
+          </objProp>
+          <stringProp name="filename"></stringProp>
+        </ResultCollector>
+        <hashTree/>
+      </hashTree>
+    </hashTree>
+  </hashTree>
+</jmeterTestPlan>
