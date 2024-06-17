@@ -12,7 +12,7 @@ on:
       
 jobs:
   build:
-    name: Executando o job de build do Projeto
+    name: Executando o job de build do projeto
     runs-on: ubuntu-latest
 
     steps:
