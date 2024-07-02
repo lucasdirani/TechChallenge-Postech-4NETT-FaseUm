@@ -12,6 +12,8 @@ services:
       POSTGRES_DB: "ContactManagementDB"
       POSTGRES_USER: "admin"
       POSTGRES_PASSWORD: "Admin*123"
+    networks:
+      - monitoring
 
   # pgAdmin Web Interface
   pgadmin:
@@ -27,6 +29,8 @@ services:
       - db
     links:
       - db:postgres
+    networks:
+      - monitoring
 
   # .NET Application
   web:
@@ -44,6 +48,8 @@ services:
       - db
     links:
       - db
+    networks:
+      - monitoring
 
   # Prometheus
   prometheus:
