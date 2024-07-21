@@ -1,10 +1,12 @@
 ﻿using Microsoft.EntityFrameworkCore.Migrations;
+using System.Diagnostics.CodeAnalysis;
 
 #nullable disable
 
 namespace Postech.PhaseOne.GroupEight.TechChallenge.Infra.Data.Migrations
 {
     /// <inheritdoc />
+    [ExcludeFromCodeCoverage]
     public partial class RemoveUniqueIdentifierPhoneNumber : Migration
     {
         /// <inheritdoc />

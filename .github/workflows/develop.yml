@@ -1,0 +1,200 @@
+name: Develop Workflow
+
+on:
+    push:
+        branches: ["develop"]
+
+permissions:
+    contents: write
+
+jobs:
+    build:
+        name: Build
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v3
+
+            - name: Setup .NET Core
+              uses: actions/setup-dotnet@v3
+              with:
+                dotnet-version: '8.0.x'
+
+            - name: Restore dependencies
+              run: dotnet restore
+              working-directory: src
+
+            - name: Build solution
+              run: dotnet build --configuration Release --no-restore
+              working-directory: src
+
+    unit_test:
+        name: Unit Tests
+        runs-on: ubuntu-latest
+        needs: build
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v3
+
+            - name: Setup .NET Core
+              uses: actions/setup-dotnet@v3
+              with:
+                dotnet-version: '8.0.x'
+
+            - name: Restore dependencies
+              run: dotnet restore
+              working-directory: tests/Postech.PhaseOne.GroupEight.TechChallenge.UnitTests
+
+            - name: Build test project
+              run: dotnet build --no-restore
+              working-directory: tests/Postech.PhaseOne.GroupEight.TechChallenge.UnitTests
+
+            - name: Run tests
+              run: dotnet test --verbosity normal
+              working-directory: tests/Postech.PhaseOne.GroupEight.TechChallenge.UnitTests
+
+    functional_test:
+        name: Functional Tests
+        runs-on: ubuntu-latest
+        needs: build
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v3
+
+            - name: Setup .NET Core
+              uses: actions/setup-dotnet@v3
+
+            - name: Restore dependencies
+              run: dotnet restore
+              working-directory: tests/Postech.PhaseOne.GroupEight.TechChallenge.FunctionalTests
+
+            - name: Build test project
+              run: dotnet build --no-restore
+              working-directory: tests/Postech.PhaseOne.GroupEight.TechChallenge.FunctionalTests
+
+            - name: Run tests
+              run: dotnet test --verbosity normal
+              working-directory: tests/Postech.PhaseOne.GroupEight.TechChallenge.FunctionalTests
+
+    coveralls:
+      name: Code Coverage with Coveralls
+      runs-on: ubuntu-latest
+      needs: [unit_test, functional_test]
+      steps:
+        - name: Checkout code
+          uses: actions/checkout@v3
+
+        - name: Setup .NET Core
+          uses: actions/setup-dotnet@v3
+
+        - name: Restore solution dependencies
+          run: dotnet restore
+          working-directory: src
+
+        - name: Run all solution tests
+          run: |
+            dotnet test src/Postech.PhaseOne.GroupEight.TechChallenge.sln --verbosity normal --no-restore /p:CollectCoverage=true /p:CoverletOutput=TestResults/ /p:CoverletOutputFormat=lcov
+
+        - name: Coveralls Code Coverage
+          uses: coverallsapp/github-action@v2
+          with:
+            files: tests/Postech.PhaseOne.GroupEight.TechChallenge.UnitTests/TestResults/coverage.info tests/Postech.PhaseOne.GroupEight.TechChallenge.IntegrationTests/TestResults/coverage.info
+    
+    create_release_branch:
+      name: Create Release Branch
+      runs-on: ubuntu-latest
+      needs: [coveralls]
+      steps:
+        - name: Checkout code from master
+          uses: actions/checkout@v3
+          with:
+            ref: master
+
+        - name: Fetch all branches
+          run: git fetch --all
+
+        - name: Get latest release branch
+          id: get_release_branch
+          run: |
+            echo "Branches remotas disponíveis:"
+            git branch -r
+            latest_release=$(git branch -r | grep 'origin/release/' | sed 's/origin\///' | sed 's/^[[:space:]]*//' | sed 's/[[:space:]]*$//' | sort -V | tail -n1)
+            echo "latest_release=$latest_release" >> $GITHUB_ENV
+            echo "Última branch de release encontrada: $latest_release"
+
+        - name: Calculate next release version
+          id: calc_next_version
+          run: |
+            if [ -z "$latest_release" ]; then
+              next_release="release/0.0.1"
+            else
+              IFS='.' read -r -a parts <<< "$latest_release"
+              major=${parts[0]}
+              minor=${parts[1]}
+              patch=${parts[2]}
+              if [ "$patch" -ge 99 ]; then
+                patch=0
+                if [ "$minor" -ge 99 ]; then
+                  minor=0
+                  major=$((major + 1))
+                else
+                  minor=$((minor + 1))
+                fi
+              else
+                patch=$((patch + 1))
+              fi
+              next_release="$major.$minor.$patch"
+            fi
+            echo "next_release=$next_release" >> $GITHUB_ENV
+
+        - name: Create new release branch
+          run: |
+            git config user.email ${{ secrets.REPO_OWNER_EMAIL }}
+            git config user.name ${{ secrets.REPO_OWNER_USERNAME }}
+            git checkout -b $next_release
+          env:
+            GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
+
+        - name: Push new release branch
+          run: |
+            git push origin $next_release
+          env:
+            GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
+
+    create_pr:
+      name: Create Pull Request
+      runs-on: ubuntu-latest
+      needs: [create_release_branch]
+      steps:
+        - name: Checkout code
+          uses: actions/checkout@v3
+      
+        - name: Fetch all branches
+          run: git fetch --all
+
+        - name: Get latest release branch
+          id: get_release_branch
+          run: |
+            echo "Branches remotas disponíveis:"
+            git branch -r
+            latest_release=$(git branch -r | grep 'origin/release/' | sed 's/origin\///' | sed 's/^[[:space:]]*//' | sed 's/[[:space:]]*$//' | sort -V | tail -n1)
+            echo "latest_release=$latest_release" >> $GITHUB_ENV
+            echo "Última branch de release encontrada: $latest_release"
+
+        - name: Check for existing Pull Request
+          id: check_pr
+          run: |
+            pr_exists=$(gh pr list --base "$latest_release" --head "develop" --state "open" --json "number" --jq '.[0].number')
+            echo "pr_exists=$pr_exists" >> $GITHUB_ENV
+          env:
+            GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
+
+        - name: Create or Update Pull Request
+          run: |
+            if [ -z "$pr_exists" ]; then
+              gh pr create --base "$latest_release" --head "develop" --title "PR automático da branch develop para $latest_release" --body "Release automatizada para a versão $latest_release"
+            else
+              gh pr edit "$pr_exists" --body "Atualização automática para a release $latest_release"
+            fi
+          env:
+            GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
