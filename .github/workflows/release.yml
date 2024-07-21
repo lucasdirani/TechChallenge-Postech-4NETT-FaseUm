@@ -121,4 +121,4 @@ jobs:
         run: |
           cd $GITHUB_WORKSPACE
           gh auth login --with-token <<< "${{ secrets.PAT_TOKEN }}"
-          gh pr create -B main --title 'PR automático da branch ${GITHUB_REF#refs/heads/} para main' --body 'Pull Request gerado automaticamente pelo Github Actions' || gh pr edit -B develop --title 'Atualização do Pull Request gerado automaticamente pelo Github Actions' --body 'Pull Request gerado automaticamente pelo Github Actions'
+          gh pr create -B main --title 'PR automático da branch ${{ github.head_ref || github.ref_name }} para main' --body 'Pull Request gerado automaticamente pelo Github Actions' || gh pr edit -B develop --title 'Atualização do Pull Request gerado automaticamente pelo Github Actions' --body 'Pull Request gerado automaticamente pelo Github Actions'
