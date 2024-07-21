@@ -117,8 +117,8 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Create Pull Request To Main
+      - name: Create Pull Request To Master
         run: |
           cd $GITHUB_WORKSPACE
           gh auth login --with-token <<< "${{ secrets.PAT_TOKEN }}"
-          gh pr create -B main --title 'PR automático da branch ${{ github.head_ref || github.ref_name }} para main' --body 'Pull Request gerado automaticamente pelo Github Actions' || gh pr edit -B develop --title 'Atualização do Pull Request gerado automaticamente pelo Github Actions' --body 'Pull Request gerado automaticamente pelo Github Actions'
+          gh pr create -B master --title 'PR automático da branch ${{ github.head_ref || github.ref_name }} para master' --body 'Pull Request gerado automaticamente pelo Github Actions' || gh pr edit -B develop --title 'Atualização do Pull Request gerado automaticamente pelo Github Actions' --body 'Pull Request gerado automaticamente pelo Github Actions'

@@ -105,10 +105,10 @@ jobs:
       runs-on: ubuntu-latest
       needs: [coveralls]
       steps:
-        - name: Checkout code from main
+        - name: Checkout code from master
           uses: actions/checkout@v3
           with:
-            ref: main
+            ref: master
 
         - name: Fetch all branches
           run: git fetch --all
