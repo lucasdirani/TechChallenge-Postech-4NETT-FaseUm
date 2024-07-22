@@ -17,7 +17,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{0460E90A
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Postech.PhaseOne.GroupEight.TechChallenge.IntegrationTests", "..\tests\Postech.PhaseOne.GroupEight.TechChallenge.IntegrationTests\Postech.PhaseOne.GroupEight.TechChallenge.IntegrationTests.csproj", "{2816D45C-C022-4698-978C-7564B5AD76DC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Postech.PhaseOne.GroupEight.TechChallenge.FunctionalTests", "..\tests\Postech.PhaseOne.GroupEight.TechChallenge.FunctionalTests\Postech.PhaseOne.GroupEight.TechChallenge.FunctionalTests.csproj", "{38248AB1-EF73-4474-9088-5B528774B50C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Postech.PhaseOne.GroupEight.TechChallenge.FunctionalTests", "..\tests\Postech.PhaseOne.GroupEight.TechChallenge.FunctionalTests\Postech.PhaseOne.GroupEight.TechChallenge.FunctionalTests.csproj", "{38248AB1-EF73-4474-9088-5B528774B50C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

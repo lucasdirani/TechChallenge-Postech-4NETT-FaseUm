@@ -7,6 +7,7 @@ using Postech.PhaseOne.GroupEight.TechChallenge.Domain.Commands.Inputs;
 using Postech.PhaseOne.GroupEight.TechChallenge.Domain.Commands.Outputs;
 using Postech.PhaseOne.GroupEight.TechChallenge.Domain.Exceptions.Common;
 using Postech.PhaseOne.GroupEight.TechChallenge.Domain.Extensions;
+using Serilog;
 using Swashbuckle.AspNetCore.Annotations;
 using System.Net;
 
@@ -29,6 +30,9 @@ builder.Services.AddSwaggerGen(c =>
     });
     c.EnableAnnotations();
 });
+
+builder.Host.UseSerilog(SeriLogger.Configure);
+
 builder.Services.AddDbContext(configuration);
 builder.Services.AddMediatR();
 builder.Services.AddDependencyRepository();
@@ -54,6 +58,13 @@ app.UseExceptionHandler(configure =>
         IExceptionHandlerPathFeature? exceptionHandlerPathFeature = context.Features.Get<IExceptionHandlerPathFeature>();
         if (exceptionHandlerPathFeature?.Error is not null)
         {
+
+            Log.Error("Ocorreu um erro inesperado!", new
+            {
+                request = context.Request.Body,
+                error = exceptionHandlerPathFeature.Error
+            });
+
             int statusCode = (int) HttpStatusCode.InternalServerError;
             string errorMessage = exceptionHandlerPathFeature.Error.Message;
             if (exceptionHandlerPathFeature?.Error is DomainException)
@@ -76,6 +87,7 @@ app.UseExceptionHandler(configure =>
 
 app.MapPost("/contacts", async (IMediator mediator, [FromBody] AddContactInput request) =>
 {
+    Log.Information("Register Contact", request);
     DomainException.ThrowWhenThereAreErrorMessages(request.Validate());
     return await mediator.Send(request);
 })
@@ -93,6 +105,7 @@ app.MapPost("/contacts", async (IMediator mediator, [FromBody] AddContactInput r
 
 app.MapDelete("/contacts", async (IMediator mediator, [FromBody] DeleteContactInput request) =>
 {
+    Log.Information("Delete Contact", request);
     DomainException.ThrowWhenThereAreErrorMessages(request.Validate());
     return await mediator.Send(request);
 })
@@ -111,6 +124,7 @@ app.MapDelete("/contacts", async (IMediator mediator, [FromBody] DeleteContactIn
 
 app.MapPut("/contacts", async (IMediator mediator, [FromBody] UpdateContactInput request) =>
 {
+    Log.Information("Update Contact", request);
     DomainException.ThrowWhenThereAreErrorMessages(request.Validate());
     return await mediator.Send(request);
 })
@@ -129,6 +143,7 @@ app.MapPut("/contacts", async (IMediator mediator, [FromBody] UpdateContactInput
 
 app.MapGet("/contacts", async (IMediator mediator, [AsParameters] FindContactInput request) =>
 {
+    Log.Information("Get Contact", request);
     DomainException.ThrowWhenThereAreErrorMessages(request.Validate());
     return await mediator.Send(request);
 })
