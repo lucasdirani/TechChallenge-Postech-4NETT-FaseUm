@@ -93,7 +93,6 @@ app.MapDelete("/contacts", async (IMediator mediator, [FromBody] DeleteContactIn
 .WithMetadata(new SwaggerResponseAttribute(404, "The contact provided for deletion does not exist"))
 .WithMetadata(new SwaggerResponseAttribute(500, "Unexpected error while deleting contact"))
 .WithOpenApi();
-
 app.MapPut("/contacts", async (IMediator mediator, [FromBody] UpdateContactInput request) =>
 {
     DomainException.ThrowWhenThereAreErrorMessages(request.Validate());
