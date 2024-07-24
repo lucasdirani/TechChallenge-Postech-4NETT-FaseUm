@@ -12,6 +12,8 @@ services:
       POSTGRES_DB: "ContactManagementDB"
       POSTGRES_USER: "admin"
       POSTGRES_PASSWORD: "Admin*123"
+    networks:
+      - monitoring
 
   # pgAdmin Web Interface
   pgadmin:
@@ -27,3 +29,72 @@ services:
       - db
     links:
       - db:postgres
+    networks:
+      - monitoring
+
+  # .NET Application
+  web:
+    build:
+      context: .
+      dockerfile: src/Postech.PhaseOne.GroupEight.TechChallenge.Api/Dockerfile
+    container_name: dotnet_app
+    restart: always
+    ports:
+      - "5005:8080"
+    environment:
+      ASPNETCORE_ENVIRONMENT: "Development"
+      ConnectionStrings__DefaultConnection: "Host=db;Database=ContactManagementDB;Username=admin;Password=Admin*123"
+    depends_on:
+      - db
+    links:
+      - db
+    networks:
+      - monitoring
+
+   # PostgreSQL Exporter
+  postgres-exporter:
+    image: wrouesnel/postgres_exporter:latest
+    container_name: postgres_exporter
+    restart: always
+    ports:
+      - "9187:9187"
+    environment:
+      DATA_SOURCE_NAME: "postgresql://admin:Admin*123@db:5432/ContactManagementDB?sslmode=disable"
+    networks:
+      - monitoring
+    depends_on:
+      - db
+
+  # Prometheus
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    restart: always
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+    networks:
+      - monitoring
+    depends_on:
+      - web
+  
+  # Grafana
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    restart: always
+    ports:
+      - "3000:3000"
+    volumes:
+      - grafana-storage:/var/lib/grafana
+    networks:
+      - monitoring
+    depends_on:
+      - prometheus
+
+networks:
+  monitoring:
+
+volumes:
+  grafana-storage:

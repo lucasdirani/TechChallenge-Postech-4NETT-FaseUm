@@ -1,34 +1,22 @@
 using MediatR;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.OpenApi.Models;
+using Postech.PhaseOne.GroupEight.TechChallenge.Api.Middlewares;
 using Postech.PhaseOne.GroupEight.TechChallenge.Api.Setup;
 using Postech.PhaseOne.GroupEight.TechChallenge.Domain.Commands.Inputs;
 using Postech.PhaseOne.GroupEight.TechChallenge.Domain.Commands.Outputs;
 using Postech.PhaseOne.GroupEight.TechChallenge.Domain.Exceptions.Common;
 using Postech.PhaseOne.GroupEight.TechChallenge.Domain.Extensions;
+using Prometheus;
 using Swashbuckle.AspNetCore.Annotations;
+using System.Diagnostics.CodeAnalysis;
 using System.Net;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 IConfigurationRoot configuration = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build();
 
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen(c =>
-{
-    c.SwaggerDoc("v1", new OpenApiInfo 
-    { 
-        Title = "ContactManagement API (Tech Challenge)", 
-        Version = "v1", 
-        Description = "Alunos responsáveis: Breno Gomes (RM353570), Lucas Pinho (RM356299), Lucas Ruiz (RM353388), Ricardo Fulgencio (RM354423) e Tatiana Lima (RM353457)",
-        Contact = new OpenApiContact()
-        {
-            Name = "Grupo 8 (Tech Challenge)",
-            Url = new Uri("https://teal-cookie-1f0.notion.site/d507d4bd69e94faead0f0edb0546a85e?v=6c004328d19943ca9e18b94dc80a3ae9&pvs=4")
-        }
-    });
-    c.EnableAnnotations();
-});
+builder.Services.AddSwaggerGenConfiguration();
 builder.Services.AddDbContext(configuration);
 builder.Services.AddMediatR();
 builder.Services.AddDependencyRepository();
@@ -46,7 +34,12 @@ if (app.Environment.IsDevelopment())
     app.MapSwagger();
     app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Api v1"));        
 }
+app.UseMetricServer();
+app.UseHttpMetrics();
 app.UseHttpsRedirection();
+Summary endpointRequestDurationMetric = PrometheusSetup.CreateEndpointRequestDurationSummaryMetric();
+Counter endpointRequestCounterMetric = PrometheusSetup.CreateEndpointRequestCounterMetric();
+app.UsePrometheusMiddleware(endpointRequestCounterMetric, endpointRequestDurationMetric);
 app.UseExceptionHandler(configure =>
 {
     configure.Run(async context =>
@@ -80,11 +73,7 @@ app.MapPost("/contacts", async (IMediator mediator, [FromBody] AddContactInput r
     return await mediator.Send(request);
 })
 .WithName("Register Contact")
-.WithMetadata(new SwaggerOperationAttribute(
-        "Register a new contact",
-        "Registers a new contact according to their first and last name, email address and phone number."
-    )
-)
+.WithMetadata(new SwaggerOperationAttribute("Register a new contact", "Registers a new contact according to their first and last name, email address and phone number."))
 .WithMetadata(new SwaggerParameterAttribute("New contact information"))
 .WithMetadata(new SwaggerResponseAttribute(200, "Contact registered successfully"))
 .WithMetadata(new SwaggerResponseAttribute(400, "The data provided for contact registration is invalid"))
@@ -97,11 +86,7 @@ app.MapDelete("/contacts", async (IMediator mediator, [FromBody] DeleteContactIn
     return await mediator.Send(request);
 })
 .WithName("Delete Contact")
-.WithMetadata(new SwaggerOperationAttribute(
-        "Deletes an existing contact",
-        "Deletes an existing contact according to its identifier."
-    )
-)
+.WithMetadata(new SwaggerOperationAttribute("Deletes an existing contact", "Deletes an existing contact according to its identifier."))
 .WithMetadata(new SwaggerParameterAttribute("Data for deleting the contact"))
 .WithMetadata(new SwaggerResponseAttribute(200, "The contact was successfully deleted"))
 .WithMetadata(new SwaggerResponseAttribute(400, "The data provided to delete the contact is invalid or the contact has already been deleted"))
@@ -115,12 +100,7 @@ app.MapPut("/contacts", async (IMediator mediator, [FromBody] UpdateContactInput
     return await mediator.Send(request);
 })
 .WithName("Update Contact")
-.WithMetadata(new SwaggerOperationAttribute
-                        (
-        "Modify an existing contact",
-        "Modifies an existing contact according to the provided data"
-    )
-)
+.WithMetadata(new SwaggerOperationAttribute("Modify an existing contact", "Modifies an existing contact according to the provided data"))
 .WithMetadata(new SwaggerParameterAttribute("Data for updating the contact"))
 .WithMetadata(new SwaggerResponseAttribute(200, "Contact updated"))
 .WithMetadata(new SwaggerResponseAttribute(400, "The data provided to update the contact is invalid"))
@@ -133,12 +113,7 @@ app.MapGet("/contacts", async (IMediator mediator, [AsParameters] FindContactInp
     return await mediator.Send(request);
 })
 .WithName("Find Contact")
-.WithMetadata(new SwaggerOperationAttribute
-                        (
-        "Find contacts by area code",
-        "Returns registered contacts based on area code"
-    )
-)
+.WithMetadata(new SwaggerOperationAttribute("Find contacts by area code", "Returns registered contacts based on area code"))
 .WithMetadata(new SwaggerParameterAttribute("Data to find contacts based on area code"))
 .WithMetadata(new SwaggerResponseAttribute(200, "Contacts were found successfully"))
 .WithMetadata(new SwaggerResponseAttribute(400, "The data provided to find the contacts is invalid"))
@@ -148,6 +123,7 @@ app.MapGet("/contacts", async (IMediator mediator, [AsParameters] FindContactInp
 
 app.Run();
 
+[ExcludeFromCodeCoverage]
 public partial class Program
 {
     protected Program() { }
